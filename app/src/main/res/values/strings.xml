@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SoftwareArchitecture</string>
+    <string name="title">KNU Times</string>
+    <string name="Logging_in">Logging in...</string>
+</resources>

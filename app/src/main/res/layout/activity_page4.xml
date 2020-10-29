@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:gravity="center"
+    android:background="@color/KNU"
+    >
+    <LinearLayout
+        android:id="@+id/P4header"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:background="@color/KNU"
+        android:gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title"
+
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/WHITE"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/WHITE"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <ImageButton
+            android:id="@+id/P4Summary"
+            android:layout_width="214dp"
+            android:layout_height="261dp"
+            android:padding="0sp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon2"
+            android:background="@color/WHITE"
+            />/ android:text="학점요약"
+        //android:textSize="24sp" />
+
+        <ImageButton
+            android:id="@+id/P4Recommend"
+            android:layout_width="match_parent"
+            android:layout_height="272dp"
+            android:padding="0sp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon3"
+            android:background="@color/WHITE"
+            />/ android:text="시간표 추천"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="313dp" />
+
+    </LinearLayout>
+</LinearLayout>

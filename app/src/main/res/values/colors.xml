@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="KNU">#D73D37</color>
+    <color name="WHITE">#FFF</color>
+    <color name="GRAY">#555758</color>
+    <color name="BGGRAY">#F3F3F3</color>
+    <color name="LGRAY">#CCCCCC</color>
+</resources>

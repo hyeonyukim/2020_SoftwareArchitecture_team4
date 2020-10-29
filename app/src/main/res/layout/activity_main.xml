@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:gravity="center"
+    android:background="@color/KNU">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title"
+        android:textColor="@color/WHITE"
+        android:textStyle="bold"
+        android:textSize="50dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시간표짜기 어려운 당신에게"
+        android:textColor="@color/WHITE"
+        android:textStyle="bold"
+        android:textSize="23dp"
+        android:layout_marginBottom="40dp"/>
+    <Button
+        android:id="@+id/P1Login"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:text="로그인"
+        android:background="@drawable/radius"
+        android:textColor="@color/GRAY"/>
+
+<!--    <Button-->
+<!--        android:id="@+id/P1Login"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="20dp"-->
+<!--        android:text="로그인"-->
+<!--        android:background="@drawable/radius"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/P1Guest"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:text="게스트로 시작"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="20dp"-->
+<!--        tools:layout_editor_absoluteX="1dp"-->
+<!--        tools:layout_editor_absoluteY="313dp"-->
+<!--        android:background="@drawable/radius"/>-->
+
+</LinearLayout>

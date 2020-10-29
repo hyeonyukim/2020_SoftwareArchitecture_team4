@@ -12,18 +12,28 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/h2mkpb"
+        android:shadowColor="#FF000080"
+        android:shadowDx="7.0"
+        android:shadowDy="7.0"
+        android:shadowRadius="7.0"
+        android:text="경대선배"
         android:textColor="@color/WHITE"
-        android:textStyle="bold"
-        android:textSize="50dp"/>
+        android:textSize="75dp"
+        android:textStyle="bold" />
+    //android:textSize="60dp"
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="시간표짜기 어려운 당신에게"
+        android:layout_marginLeft="18dp"
+        android:layout_marginBottom="40dp"
+        android:fontFamily="@font/h2gtre"
+        android:text="시간표 짜기 어려운 당신에게"
         android:textColor="@color/WHITE"
-        android:textStyle="bold"
-        android:textSize="23dp"
-        android:layout_marginBottom="40dp"/>
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
     <Button
         android:id="@+id/P1Login"
         android:layout_width="350dp"
@@ -34,24 +44,24 @@
         android:background="@drawable/radius"
         android:textColor="@color/GRAY"/>
 
-<!--    <Button-->
-<!--        android:id="@+id/P1Login"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textSize="20dp"-->
-<!--        android:text="로그인"-->
-<!--        android:background="@drawable/radius"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/P1Login"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="100dp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        android:textSize="20dp"-->
+    <!--        android:text="로그인"-->
+    <!--        android:background="@drawable/radius"/>-->
 
-<!--    <Button-->
-<!--        android:id="@+id/P1Guest"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:text="게스트로 시작"-->
-<!--        android:textStyle="bold"-->
-<!--        android:textSize="20dp"-->
-<!--        tools:layout_editor_absoluteX="1dp"-->
-<!--        tools:layout_editor_absoluteY="313dp"-->
-<!--        android:background="@drawable/radius"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/P1Guest"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="100dp"-->
+    <!--        android:text="게스트로 시작"-->
+    <!--        android:textStyle="bold"-->
+    <!--        android:textSize="20dp"-->
+    <!--        tools:layout_editor_absoluteX="1dp"-->
+    <!--        tools:layout_editor_absoluteY="313dp"-->
+    <!--        android:background="@drawable/radius"/>-->
 
 </LinearLayout>

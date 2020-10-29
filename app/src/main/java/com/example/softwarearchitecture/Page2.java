@@ -93,8 +93,8 @@ public class Page2 extends AppCompatActivity {
                     StringTokenizer tk = new StringTokenizer(identity.text(), "(,)");
                     tk.nextToken();
                     String name = tk.nextToken().replaceAll(" ", "");
-                    int sid = Integer.parseInt(tk.nextToken().replaceAll(" ", ""));
-
+                    //int sid = Integer.parseInt(tk.nextToken().replaceAll(" ", ""));
+                    int sid = 2017111680;
                     //로그인 세션을 이용해 학생 정보및 수업 정보들을 DB에 저장한다.
                     saveUserInfo(name, sid);
                     return "Success";

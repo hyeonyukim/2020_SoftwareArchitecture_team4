@@ -23,7 +23,8 @@ public class myDBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE LearnedClass (subjectID TEXT, sID INTEGER, " +
                 "yearSemester TEXT, gubun TEXT, score TEXT, " +
                 "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
-                "PRIMARY KEY(subjectID, sID));");
+                "FOREIGN KEY(sID) REFERENCES Student(sID), " +
+                "PRIMARY KEY(subjectID, sID, yearSemester));");
         db.execSQL("CREATE TABLE Curriculum (subjectID TEXT, sID INTEGER, " +
                 "yearSemester TEXT, " +
                 "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +

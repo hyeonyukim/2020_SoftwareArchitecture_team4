@@ -90,11 +90,10 @@ public class Page2 extends AppCompatActivity {
                 //로그인에 성공한 경우
                 if (identity.size() > 0) {
                     //이름과 학번을 분리해서 저장한다.
-                    StringTokenizer tk = new StringTokenizer(identity.text(), "(,)");
+                    StringTokenizer tk = new StringTokenizer(identity.text(), "(/)");
                     tk.nextToken();
                     String name = tk.nextToken().replaceAll(" ", "");
-                    //int sid = Integer.parseInt(tk.nextToken().replaceAll(" ", ""));
-                    int sid = 2017111680;
+                    int sid = Integer.parseInt(tk.nextToken().replaceAll(" ", ""));
                     //로그인 세션을 이용해 학생 정보및 수업 정보들을 DB에 저장한다.
                     saveUserInfo(name, sid);
                     return "Success";
@@ -129,8 +128,6 @@ public class Page2 extends AppCompatActivity {
             }
         }
 
-//        db.execSQL("CREATE TABLE Student (sID INTEGER PRIMARY KEY, College TEXT, " +
-//         "Major TEXT, Name TEXT, Grage INTEGER, Average_Score REAL);");
 //        db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
 //                "credit INTEGER);");
 //        db.execSQL("CREATE TABLE OpenedClass (subjectFullID TEXT PRIMARY KEY, subjectSubID TEXT, " +
@@ -152,8 +149,12 @@ public class Page2 extends AppCompatActivity {
                     "certRecEnq.recDiv=1&id=certRecEnqGrid&columnsProperty=certRecEnqColumns&rowsProperty=certRecEnqs&" +
                     "emptyMessageProperty=certRecEnqNotFoundMessage&viewColumn=yr_trm%2Csubj_div_cde%2Csubj_cde%2Csubj_nm%2Cunit%2Crec_rank_cde&" +
                     "checkable=false&showRowNumber=false&paged=false&serverSortingYn=false&lastColumnNoRender=false&_=";
-            String studentURL = "https://yes.knu.ac.kr/stud/stud/SimplePart.action?stu_nbr="+sid+"&grad_yr_trm&absReq.search_change_cause&_=";
-            String gradeURL = "";
+            String studentURL =  "https://yes.knu.ac.kr/stud/stud/infoMngt/basisMngt/listBasisMngts.action?" +
+                    "basisMngt.stu_nbr="+sid+"&id=basisMngtGrid&columnsProperty=basisMngtColumns&rowsProperty=basisMngts&emptyMessageProperty=basisMngtNotFoundMessage&" +
+                    "viewColumn=null&checkable=false&showRowNumber=false&paged=false&serverSortingYn=false&lastColumnNoRender=false&_=";
+            String avgGradeURL = "https://yes.knu.ac.kr/cour/scor/certRec/certRecEnq/listCertRecStatses.action?" +
+                    "certRecStats.recDiv=1&certRecStats.gubun=2&id=certRecStatsGrid&columnsProperty=certRecStatsColumns&rowsProperty=certRecStatses&" +
+                    "emptyMessageProperty=certRecStatsNotFoundMessage&viewColumn=%2Cgrd_avg&checkable=false&showRowNumber=false&paged=false&serverSortingYn=false&lastColumnNoRender=false&_=";
             String openedClassURL = "";
             String curriculumURL = "";
 
@@ -166,11 +167,49 @@ public class Page2 extends AppCompatActivity {
                 Map<String, String> cookies = response.cookies();
 
                 //학생의 기본 정보를 볼 수 있는 url및 성적을 확인할 수 있는 url에 연결하고, DB의 Student table에 추가함.
+                Document basicInfo = Jsoup.connect(studentURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
+                int grade = Integer.parseInt(basicInfo.select(".gde_cde").select("[currentvalue]").attr("currentvalue"));
+                StringTokenizer tok = new StringTokenizer(basicInfo.select(".pstn_crse_cde_nm2").select("[currentvalue]").attr("currentvalue"), " ");
+                String College = tok.nextToken();
+                String Major = tok.nextToken();
 
+                Document avgGradeInfo = Jsoup.connect(avgGradeURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
+                double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_6").select(".grd_avg").text());
+                db.execSQL("INSERT INTO Student values("+sid+", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
 
                 //학생의 이수과목 및 성적을 볼 수 있는 url에 연결하고 이를 DB의 learnedClass table에 추가함.
-                String learned = Jsoup.connect(subjectURL).method(Connection.Method.GET).cookies(cookies).execute().parse().html();
-                System.out.println(learned);
+                Document learned = Jsoup.connect(subjectURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
+                int code=0;
+                //각 수강 과목을 가져와 db의 table들에 추가한다. 더 이상 수강 과목이 없을 때까지 반복한다.
+                while(true){
+                    String id = "cerRecEnqGrid_" + code;
+                    Elements tableRow = learned.select(id);
+                    if(tableRow.size()<=0)
+                        break;
+
+//                    db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
+//                            "credit INTEGER);");
+//                    db.execSQL("CREATE TABLE LearnedClass (subjectID TEXT, sID INTEGER, " +
+//                            "yearSemester TEXT, gubun TEXT, score TEXT, " +
+//                            "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
+//                            "PRIMARY KEY(subjectID, sID));");
+
+                    //데이터를 가져와 subject table에 추가함.
+                    String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
+                    String subjectName = tableRow.select(".subj_cnm").attr("currentvalue");
+                    int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
+                    db.execSQL("INSERT INTO Subject VALUES('"+subjectID+"', '"+subjectName +"', "+credit+");");
+
+                    //데이터를 가져와 learnedClass table에 추가함.
+                    String yearSemester = tableRow.select(".yr_trm").attr("currentvalue");
+                    String gubun = tableRow.select(".subj_div_cde").attr("currentvalue");
+                    String score = tableRow.select(".rec_rank_cde").attr("currentvalue");
+                    db.execSQL("INSERT INTO LearnedClass VALUES('"+subjectID+"', "+sid+", '"+yearSemester+"', '"+gubun+"', " +
+                            ""+score+");");
+                    code++;
+                }
+
+                System.out.println(learned.html());
 
                 //다음 학기에 개설되는 수업들의 목록을 가져와 DB의 OpenedClass table에 추가함.
 

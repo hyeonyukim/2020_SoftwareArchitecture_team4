@@ -2,6 +2,7 @@ package com.example.softwarearchitecture;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,6 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +27,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -59,6 +64,15 @@ public class Page2 extends AppCompatActivity {
         String loginAction = "https://yes.knu.ac.kr/comm/comm/support/login/login.action";
         Connection.Response response;
         Document doc;
+        ProgressDialog progressDialog;
+
+        protected void onPreExecute(){
+            progressDialog = new ProgressDialog(Page2.this);
+            progressDialog.setMessage("학생정보 로딩중...");
+            progressDialog.setCancelable(false);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal);
+            progressDialog.show();
+        }
 
         //백그라운드에서 실행하는 내용
         @Override
@@ -113,8 +127,8 @@ public class Page2 extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            progressDialog.dismiss();
             //백그라운드 스레드로부터 성공 및 실패 여부를 String으로 받아온다.
-            Log.i("post", s);
             //로그인과 모든 정보를 저장하는 데 성공한 경우
             if (s.equals("Success")) {
                 //다음 페이지로 넘어감.
@@ -155,6 +169,9 @@ public class Page2 extends AppCompatActivity {
             String avgGradeURL = "https://yes.knu.ac.kr/cour/scor/certRec/certRecEnq/listCertRecStatses.action?" +
                     "certRecStats.recDiv=1&certRecStats.gubun=2&id=certRecStatsGrid&columnsProperty=certRecStatsColumns&rowsProperty=certRecStatses&" +
                     "emptyMessageProperty=certRecStatsNotFoundMessage&viewColumn=%2Cgrd_avg&checkable=false&showRowNumber=false&paged=false&serverSortingYn=false&lastColumnNoRender=false&_=";
+            String knuSessionURL = "http://my.knu.ac.kr";
+            String yearSemesterURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/chkSearchYrTrm.action?search_gubun=&_=";
+            String MojorSectionURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/listCrseCdes2.action?search_open_bndle_cde=1&search_gubun=1&_=";
             String openedClassURL = "";
             String curriculumURL = "";
 
@@ -180,42 +197,74 @@ public class Page2 extends AppCompatActivity {
                 //학생의 이수과목 및 성적을 볼 수 있는 url에 연결하고 이를 DB의 learnedClass table에 추가함.
                 Document learned = Jsoup.connect(subjectURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
                 int code=0;
-                //각 수강 과목을 가져와 db의 table들에 추가한다. 더 이상 수강 과목이 없을 때까지 반복한다.
+                    //각 수강 과목을 가져와 db의 table들에 추가한다. 더 이상 수강 과목이 없을 때까지 반복한다.
                 while(true){
-                    String id = "cerRecEnqGrid_" + code;
+                    String id = "#certRecEnqGrid_" + code;
                     Elements tableRow = learned.select(id);
                     if(tableRow.size()<=0)
                         break;
-
-//                    db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
-//                            "credit INTEGER);");
-//                    db.execSQL("CREATE TABLE LearnedClass (subjectID TEXT, sID INTEGER, " +
-//                            "yearSemester TEXT, gubun TEXT, score TEXT, " +
-//                            "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
-//                            "PRIMARY KEY(subjectID, sID));");
-
                     //데이터를 가져와 subject table에 추가함.
                     String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
                     String subjectName = tableRow.select(".subj_cnm").attr("currentvalue");
                     int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
-                    db.execSQL("INSERT INTO Subject VALUES('"+subjectID+"', '"+subjectName +"', "+credit+");");
-
+                    db.execSQL("INSERT OR REPLACE INTO Subject VALUES('"+subjectID+"', '"+subjectName +"', "+credit+");");
                     //데이터를 가져와 learnedClass table에 추가함.
                     String yearSemester = tableRow.select(".yr_trm").attr("currentvalue");
                     String gubun = tableRow.select(".subj_div_cde").attr("currentvalue");
                     String score = tableRow.select(".rec_rank_cde").attr("currentvalue");
                     db.execSQL("INSERT INTO LearnedClass VALUES('"+subjectID+"', "+sid+", '"+yearSemester+"', '"+gubun+"', " +
-                            ""+score+");");
+                            "'"+score+"');");
                     code++;
                 }
 
-                System.out.println(learned.html());
-
                 //다음 학기에 개설되는 수업들의 목록을 가져와 DB의 OpenedClass table에 추가함.
+                    //knu사이트의 기본 쿠키들을 가져온다.
+                response = Jsoup.connect(knuSessionURL).method(Connection.Method.GET).execute();
+                cookies = response.cookies();
+                    //현재 학기가 무엇인지 알아온다. 다음 학기의 시간표를 짜기 위해서는 여기 결과에 한 학기를 추가하도록 수정해야함.
+                Document yearSemesterDoc = Jsoup.connect(yearSemesterURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
+                String present_year_trm = yearSemesterDoc.body().text().replaceAll("'", "");
+                    //각 전공에 따르는 고유 번호들을 가져와서 그 중 사용자와 일치하는 고유 번호를 저장한다.
+                    //전공과 일치하는 항목은 1개 이상일 수 있다. 예를 들어 컴퓨터학과는 컴퓨터학과는 플랫폼 소프트웨어 전공 등 세부 전공이 있기 때문이다.
+                    //따라서 전공의 이름을 포함하는 모든 전공들의 코드를 저장해야 한다.
+                Document MajorSectionDoc = Jsoup.connect(MojorSectionURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
+                JSONArray jsonArray = new JSONArray(MajorSectionDoc.body().text());
+                ArrayList<Integer> codeList = new ArrayList<Integer>();
+                for(int i=0; i<jsonArray.length(); i++){
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String crse_nm = jsonObject.getString("open_crse_nm_1");
+                    if(crse_nm.contains(Major)){
+                        codeList.add(i);
+                    }
+                }
+                for(int i=0; i<codeList.size(); i++){
+                    int index = codeList.get(i);
+                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    String crse_cde = jsonObject.getString("open_crse_cde_1");
+                    String rn = jsonObject.getString("rn");
+                    openedClassURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/list.action?" +
+                            "search_open_crse_cde="+crse_cde+"&sub="+rn+"&search_open_yr_trm="+present_year_trm;
+                    Document openedClassDoc = Jsoup.connect(openedClassURL).method(Connection.Method.GET).execute().parse();
+                    Elements classInfo = openedClassDoc.select("tr");
+                    Elements subjecID = classInfo.select(".th4");
+                    Elements gubun = classInfo.select(".th2");
+                    Elements credit = classInfo.select(".th6");
+                    Elements professor = classInfo.select(".th9");
+                    Elements time = classInfo.select(".th17");
+                    Elements classroom = classInfo.select(".th11");
+                    Elements maxStudent = classInfo.select(".th12");
+                    Elements subjectName = classInfo.select(".th5");
+                    for(int j=1; j<subjecID.size(); j++){
+                        db.execSQL("INSERT OR REPLACE INTO Subject VALUES('"+ subjecID.get(j).text().substring(0, 7) + "', '"+subjectName.get(j).text()+"', "+credit.get(j).text()+");");
+                        db.execSQL("INSERT OR REPLACE INTO OpenedClass VALUES('"+subjecID.get(j).text()+"', '"+subjecID.get(j).text().substring(0, 7)+"', '"+gubun.get(j).text()+"', " +
+                                "'"+professor.get(j).text()+"', '"+time.get(2*j).text()+"', '"+classroom.get(j).text()+"', "+maxStudent.get(j).text()+");");
+                    }
+                }
 
                 //해당 학과의 커리큘럼을 가져와 DB의 Curriculum table에 추가함
 
-            } catch (IOException e) {
+
+            } catch (IOException | JSONException e) {
                 Log.i("get_fail", "Getting student info has failed");
                 e.printStackTrace();
             }

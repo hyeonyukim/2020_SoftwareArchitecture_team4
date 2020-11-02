@@ -192,58 +192,58 @@ public class Page2 extends AppCompatActivity {
 
                 Document avgGradeInfo = Jsoup.connect(avgGradeURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
                 double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_6").select(".grd_avg").text());
-                db.execSQL("INSERT INTO Student values("+sid+", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
+                db.execSQL("INSERT INTO Student values(" + sid + ", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
 
                 //학생의 이수과목 및 성적을 볼 수 있는 url에 연결하고 이를 DB의 learnedClass table에 추가함.
                 Document learned = Jsoup.connect(subjectURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
-                int code=0;
-                    //각 수강 과목을 가져와 db의 table들에 추가한다. 더 이상 수강 과목이 없을 때까지 반복한다.
-                while(true){
+                int code = 0;
+                //각 수강 과목을 가져와 db의 table들에 추가한다. 더 이상 수강 과목이 없을 때까지 반복한다.
+                while (true) {
                     String id = "#certRecEnqGrid_" + code;
                     Elements tableRow = learned.select(id);
-                    if(tableRow.size()<=0)
+                    if (tableRow.size() <= 0)
                         break;
                     //데이터를 가져와 subject table에 추가함.
                     String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
                     String subjectName = tableRow.select(".subj_cnm").attr("currentvalue");
                     int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
-                    db.execSQL("INSERT OR REPLACE INTO Subject VALUES('"+subjectID+"', '"+subjectName +"', "+credit+");");
+                    db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjectID + "', '" + subjectName + "', " + credit + ");");
                     //데이터를 가져와 learnedClass table에 추가함.
                     String yearSemester = tableRow.select(".yr_trm").attr("currentvalue");
                     String gubun = tableRow.select(".subj_div_cde").attr("currentvalue");
                     String score = tableRow.select(".rec_rank_cde").attr("currentvalue");
-                    db.execSQL("INSERT INTO LearnedClass VALUES('"+subjectID+"', "+sid+", '"+yearSemester+"', '"+gubun+"', " +
-                            "'"+score+"');");
+                    db.execSQL("INSERT INTO LearnedClass VALUES('" + subjectID + "', " + sid + ", '" + yearSemester + "', '" + gubun + "', " +
+                            "'" + score + "');");
                     code++;
                 }
 
                 //다음 학기에 개설되는 수업들의 목록을 가져와 DB의 OpenedClass table에 추가함.
-                    //knu사이트의 기본 쿠키들을 가져온다.
+                //knu사이트의 기본 쿠키들을 가져온다.
                 response = Jsoup.connect(knuSessionURL).method(Connection.Method.GET).execute();
                 cookies = response.cookies();
-                    //현재 학기가 무엇인지 알아온다. 다음 학기의 시간표를 짜기 위해서는 여기 결과에 한 학기를 추가하도록 수정해야함.
+                //현재 학기가 무엇인지 알아온다. 다음 학기의 시간표를 짜기 위해서는 여기 결과에 한 학기를 추가하도록 수정해야함.
                 Document yearSemesterDoc = Jsoup.connect(yearSemesterURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
                 String present_year_trm = yearSemesterDoc.body().text().replaceAll("'", "");
-                    //각 전공에 따르는 고유 번호들을 가져와서 그 중 사용자와 일치하는 고유 번호를 저장한다.
-                    //전공과 일치하는 항목은 1개 이상일 수 있다. 예를 들어 컴퓨터학과는 컴퓨터학과는 플랫폼 소프트웨어 전공 등 세부 전공이 있기 때문이다.
-                    //따라서 전공의 이름을 포함하는 모든 전공들의 코드를 저장해야 한다.
+                //각 전공에 따르는 고유 번호들을 가져와서 그 중 사용자와 일치하는 고유 번호를 저장한다.
+                //전공과 일치하는 항목은 1개 이상일 수 있다. 예를 들어 컴퓨터학과는 컴퓨터학과는 플랫폼 소프트웨어 전공 등 세부 전공이 있기 때문이다.
+                //따라서 전공의 이름을 포함하는 모든 전공들의 코드를 저장해야 한다.
                 Document MajorSectionDoc = Jsoup.connect(MojorSectionURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
                 JSONArray jsonArray = new JSONArray(MajorSectionDoc.body().text());
                 ArrayList<Integer> codeList = new ArrayList<Integer>();
-                for(int i=0; i<jsonArray.length(); i++){
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String crse_nm = jsonObject.getString("open_crse_nm_1");
-                    if(crse_nm.contains(Major)){
+                    if (crse_nm.contains(Major)) {
                         codeList.add(i);
                     }
                 }
-                for(int i=0; i<codeList.size(); i++){
+                for (int i = 0; i < codeList.size(); i++) {
                     int index = codeList.get(i);
                     JSONObject jsonObject = jsonArray.getJSONObject(index);
                     String crse_cde = jsonObject.getString("open_crse_cde_1");
                     String rn = jsonObject.getString("rn");
                     openedClassURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/list.action?" +
-                            "search_open_crse_cde="+crse_cde+"&sub="+rn+"&search_open_yr_trm="+present_year_trm;
+                            "search_open_crse_cde=" + crse_cde + "&sub=" + rn + "&search_open_yr_trm=" + present_year_trm;
                     Document openedClassDoc = Jsoup.connect(openedClassURL).method(Connection.Method.GET).execute().parse();
                     Elements classInfo = openedClassDoc.select("tr");
                     Elements subjecID = classInfo.select(".th4");
@@ -254,15 +254,22 @@ public class Page2 extends AppCompatActivity {
                     Elements classroom = classInfo.select(".th11");
                     Elements maxStudent = classInfo.select(".th12");
                     Elements subjectName = classInfo.select(".th5");
-                    for(int j=1; j<subjecID.size(); j++){
-                        db.execSQL("INSERT OR REPLACE INTO Subject VALUES('"+ subjecID.get(j).text().substring(0, 7) + "', '"+subjectName.get(j).text()+"', "+credit.get(j).text()+");");
-                        db.execSQL("INSERT OR REPLACE INTO OpenedClass VALUES('"+subjecID.get(j).text()+"', '"+subjecID.get(j).text().substring(0, 7)+"', '"+gubun.get(j).text()+"', " +
-                                "'"+professor.get(j).text()+"', '"+time.get(2*j).text()+"', '"+classroom.get(j).text()+"', "+maxStudent.get(j).text()+");");
+                    for (int j = 1; j < subjecID.size(); j++) {
+                        db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjecID.get(j).text().substring(0, 7) + "', '" + subjectName.get(j).text() + "', " + credit.get(j).text() + ");");
+                        db.execSQL("INSERT OR REPLACE INTO OpenedClass VALUES('" + subjecID.get(j).text() + "', '" + subjecID.get(j).text().substring(0, 7) + "', '" + gubun.get(j).text() + "', " +
+                                "'" + professor.get(j).text() + "', '" + time.get(2 * j).text() + "', '" + classroom.get(j).text() + "', " + maxStudent.get(j).text() + ");");
                     }
                 }
 
                 //해당 학과의 커리큘럼을 가져와 DB의 Curriculum table에 추가함
+                //커리큘럼 검색에 사용되는 정보는 학번 및 전공의 코드 번호인데, 이는 이전의 jsonArray와 codeList를 이용해 알 수 있음.
+                for (int i = 0; i < codeList.size(); i++) {
+                    int index = codeList.get(i);
+                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    String crse_cde = jsonObject.getString("open_crse_cde_1");
+                    curriculumURL = "http://yes.knu.ac.kr/cour/curr/curriculum/listCurr/listCurrs.action?listCurr.search_tgt_yr="+sid/1000000+"&listCurr.search_crse_cde="+crse_cde+"&_=";
 
+                }
 
             } catch (IOException | JSONException e) {
                 Log.i("get_fail", "Getting student info has failed");

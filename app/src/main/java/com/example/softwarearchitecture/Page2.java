@@ -191,6 +191,7 @@ public class Page2 extends AppCompatActivity {
                 String Major = tok.nextToken();
 
                 Document avgGradeInfo = Jsoup.connect(avgGradeURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
+                Log.i("avgGrade", avgGradeInfo.html());
                 double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_6").select(".grd_avg").text());
                 db.execSQL("INSERT INTO Student values(" + sid + ", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
 

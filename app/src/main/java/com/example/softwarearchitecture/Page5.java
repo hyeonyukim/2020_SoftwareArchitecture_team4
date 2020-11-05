@@ -130,25 +130,24 @@ public class Page5 extends AppCompatActivity {
 
             int score43_integer = (int)score43;//4.3학점의 정수부분
             double score43_double = score43 - (double)score43_integer;//4.3학점의 소수부분
+            double score43_double_cal = 0;
             Log.i("before round", score43_double+"");
             score43_double = Math.round(score43_double*100)/100.0;
             if(score43_double < 0.3){//소수부분이 0.3보다 작을 경우
-                score43_double = score43_double + 1;
+                score43_double_cal = score43_double + 1;
             }
             else if(score43_double >= 0.3){//소수부분이 0.3보다 큰 경우
-                score43_double = score43_double;
+                score43_double_cal = score43_double;
             }
 
-            Log.i("int", score43_integer+"");
-            Log.i("double", score43_double+"");
-            double score45_double = score45_table.get(score43_double);//4.3 학점의 소수부분을 토대로 4.5학점으로 변환
+            double score45_double = score45_table.get(score43_double_cal);//4.3 학점의 소수부분을 토대로 4.5학점으로 변환
 
             double score45 = 0.0; //초기값 설정
 
-            if(score43_double -1 < 0.3){//0.3보다 작을 경우
+            if(score43_double  < 0.3){//0.3보다 작을 경우
                 score45 = score45_double + score43_integer - 1;
             }
-            else if(score43_double -1 >= 0.3){//0.3보다 큰 경우
+            else if(score43_double >= 0.3){//0.3보다 큰 경우
                 score45 = score45_double + score43_integer;
             }
 

@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -192,13 +191,7 @@ public class Page2 extends AppCompatActivity {
                 String Major = tok.nextToken();
 
                 Document avgGradeInfo = Jsoup.connect(avgGradeURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
-                int last_col=0;
-                Elements rowElement = avgGradeInfo.select("#certRecStatsGrid_"+last_col);
-                while(rowElement.size()!=0){
-                    last_col++;
-                    rowElement = avgGradeInfo.select("#certRecStatsGrid_"+last_col);
-                }
-                double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_"+(last_col-1)).select(".grd_avg").text());
+                double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_6").select(".grd_avg").text());
                 db.execSQL("INSERT INTO Student values(" + sid + ", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
 
                 //학생의 이수과목 및 성적을 볼 수 있는 url에 연결하고 이를 DB의 learnedClass table에 추가함.
@@ -275,16 +268,7 @@ public class Page2 extends AppCompatActivity {
                     JSONObject jsonObject = jsonArray.getJSONObject(index);
                     String crse_cde = jsonObject.getString("open_crse_cde_1");
                     curriculumURL = "http://yes.knu.ac.kr/cour/curr/curriculum/listCurr/listCurrs.action?listCurr.search_tgt_yr="+sid/1000000+"&listCurr.search_crse_cde="+crse_cde+"&_=";
-                    Document CurriculumDoc = Jsoup.connect(curriculumURL).method(Connection.Method.GET).execute().parse();
 
-                    Element requirement = CurriculumDoc.select(".courTable").get(2);
-                    System.out.println(requirement.html());
-//                    requirement = requirement.selectFirst("[rowspan]");
-//                    while(requirement.html().length()>0){
-//                        requirement.f
-//                    }
-//                    System.out.println(elective.html());
-                    //System.out.println(elective.html());
                 }
 
             } catch (IOException | JSONException e) {

@@ -197,7 +197,9 @@ public class Page2 extends AppCompatActivity {
                     lastElement++;
                     lastrow = avgGradeInfo.select("#certRecStatsGrid_"+lastElement);
                 }
+
                 double avgGrade = Double.parseDouble(avgGradeInfo.select("#certRecStatsGrid_"+(lastElement-1)).select(".grd_avg").text());
+                Log.i("average", avgGrade+"");
                 db.execSQL("INSERT INTO Student values(" + sid + ", '" + College + "', '" + Major + "', '" + name + "', " + grade + ", " + avgGrade + ");");
 
                 //학생의 이수과목 및 성적을 볼 수 있는 url에 연결하고 이를 DB의 learnedClass table에 추가함.

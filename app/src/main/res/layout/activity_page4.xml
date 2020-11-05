@@ -36,33 +36,74 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-
-        <ImageButton
-            android:id="@+id/P4Summary"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:padding="0sp"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/calculator"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:background="@color/WHITE"
-            android:gravity="center_vertical"
-            android:text="성적조회"
-            android:textSize="24sp"
-            />/ android:text="학점요약"
-        //android:textSize="24sp" />
+            android:gravity="center_horizontal">
 
-        <ImageButton
-            android:id="@+id/P4Recommend"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:background="@color/WHITE"
-            android:padding="0sp"
-            android:gravity="center_vertical"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/calendar" />/ android:text="시간표 추천"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="313dp" />
+            <LinearLayout
+                android:id="@+id/P4Summary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/WHITE"
+                android:gravity="top"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:background="@color/WHITE"
+                    android:gravity="center_vertical"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/calculator"
+                    android:text="성적조회"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="성적조회"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/P4Recommend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/WHITE"
+                android:gravity="top"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:background="@color/WHITE"
+                    android:gravity="center_vertical"
+                    android:padding="0sp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/calendar" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="학점요약"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
+
 </LinearLayout>

@@ -16,26 +16,26 @@ public class Page4 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page4);
 
-//        final LinearLayout P4Summary = (LinearLayout) findViewById(R.id.P4Summary);
-//        P4Summary.setOnClickListener(
-//                new View.OnClickListener(){
-//                    @Override
-//                    public void onClick(View view) {
-//                        Intent P4SummaryIntent = new Intent(Page4.this, Page5.class);
-//                        startActivity(P4SummaryIntent);
-//                    }
-//                }
-//        );
-//
-//        final LinearLayout P4Recommend = (LinearLayout) findViewById(R.id.P4Recommend);
-//        P4Recommend.setOnClickListener(
-//                new View.OnClickListener(){
-//                    @Override
-//                    public void onClick(View view) {
-//                        Intent P4RecommendIntent = new Intent(Page4.this, Page6.class);
-//                        startActivity(P4RecommendIntent);
-//                    }
-//                }
-//        );
+        final ImageButton P4Summary = (ImageButton) findViewById(R.id.P4Summary);
+        P4Summary.setOnClickListener(
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view) {
+                        Intent P4SummaryIntent = new Intent(Page4.this, Page5.class);
+                        startActivity(P4SummaryIntent);
+                    }
+                }
+        );
+
+        final ImageButton P4Recommend = (ImageButton) findViewById(R.id.P4Recommend);
+        P4Recommend.setOnClickListener(
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view) {
+                        Intent P4RecommendIntent = new Intent(Page4.this, Page6.class);
+                        startActivity(P4RecommendIntent);
+                    }
+                }
+        );
     }
 }

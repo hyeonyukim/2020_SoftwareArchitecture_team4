@@ -155,6 +155,7 @@ public class Page2 extends AppCompatActivity {
         }
 
         String College, Major;
+        int grade;
         JSONArray crseCodeArr;
         ArrayList<Integer> codeList;
 
@@ -178,7 +179,7 @@ public class Page2 extends AppCompatActivity {
 
                 //학생의 기본 정보를 볼 수 있는 url및 성적을 확인할 수 있는 url에 연결하고, DB의 Student table에 추가함.
                 Document basicInfo = Jsoup.connect(studentURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
-                int grade = Integer.parseInt(basicInfo.select(".gde_cde").select("[currentvalue]").attr("currentvalue"));
+                grade = Integer.parseInt(basicInfo.select(".gde_cde").select("[currentvalue]").attr("currentvalue"));
                 StringTokenizer tok = new StringTokenizer(basicInfo.select(".pstn_crse_cde_nm2").select("[currentvalue]").attr("currentvalue"), " ");
                 College = tok.nextToken();
                 Major = tok.nextToken();
@@ -223,6 +224,9 @@ public class Page2 extends AppCompatActivity {
             }
         }
 
+        String present_year_trm;
+        int semester;
+
         protected void saveOpenedClassInfo(){
             String knuSessionURL = "http://my.knu.ac.kr";
             String yearSemesterURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/chkSearchYrTrm.action?search_gubun=&_=";
@@ -235,7 +239,8 @@ public class Page2 extends AppCompatActivity {
                 Map<String, String> cookies = response.cookies();
                 //현재 학기가 무엇인지 알아온다. 다음 학기의 시간표를 짜기 위해서는 여기 결과에 한 학기를 추가하도록 수정해야함.
                 Document yearSemesterDoc = Jsoup.connect(yearSemesterURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
-                String present_year_trm = yearSemesterDoc.body().text().replaceAll("'", "");
+                present_year_trm = yearSemesterDoc.body().text().replaceAll("'", "");
+                semester = Integer.parseInt(present_year_trm.charAt(present_year_trm.length()-1)+"");
                 //각 전공에 따르는 고유 번호들을 가져와서 그 중 사용자와 일치하는 고유 번호를 저장한다.
                 //전공과 일치하는 항목은 1개 이상일 수 있다. 예를 들어 컴퓨터학과는 컴퓨터학과는 플랫폼 소프트웨어 전공 등 세부 전공이 있기 때문이다.
                 //따라서 전공의 이름을 포함하는 모든 전공들의 코드를 저장해야 한다.
@@ -285,20 +290,51 @@ public class Page2 extends AppCompatActivity {
                 //학번이 저장된 변수 명 : sid
                 //학과 코드가 저장된 변수 : codeList(arraylist형태)
                 //학년이 저장된 변수 : grade
-                //현재 학기 이름(20202와 같은 형태) 변수 : present_year_trm
+                //현재 학기 변수 : semester
                 for (int i = 0; i < codeList.size(); i++) {
                     int index = codeList.get(i);
                     JSONObject jsonObject = crseCodeArr.getJSONObject(index);
                     String crse_cde = jsonObject.getString("open_crse_cde_1");
                     curriculumURL = "http://yes.knu.ac.kr/cour/curr/curriculum/listCurr/listCurrs.action?listCurr.search_tgt_yr="+sid/1000000+"&listCurr.search_crse_cde="+crse_cde+"&_=";
                     Document curriculumDoc = Jsoup.connect(curriculumURL).method(Connection.Method.GET).execute().parse();
-                    //전공 과목 관련 커리큘럼 테이블
-                    Element majorTable = curriculumDoc.select(".courTable").get(2);
-                    //교양 과목 관련 커리큘럼 테이블
-                    Element electiveTable = curriculumDoc.select(".courTable").get(3);
+                    //j=2일때 -> 전공 과목 관련 커리큘럼 테이블
+                    //j=3일때 -> 교양 과목 관련 커리큘럼 테이블
+                    for(int j=2; j<4; j++){
+                        Element curriculumTable = curriculumDoc.select(".courTable").get(j);
+                        Elements gradeRow = curriculumTable.select("[rowspan]");
+                        //학년별 커리큘럼을 찾아보고 사용자의 학년과 일치하는 부분이 있는 지 확인한다.
+                        int k, skipRow=2;
+                        for(k=0; k<gradeRow.size(); k++){
+                            if(Integer.parseInt(gradeRow.get(k).text())==grade)
+                                break;
+                            skipRow += Integer.parseInt(gradeRow.get(k).attr("rowspan"));
+                        }
+                        //사용자의 학년과 일치하는 정보가 있을 경우.
+                        if(k!=gradeRow.size()){
+                            int rowspan = Integer.parseInt(curriculumTable.select("tr").get(skipRow)
+                                    .select("[rowspan]").attr("rowspan"));
+                            for(k=0; k<rowspan; k++){
+                                Element tr = curriculumTable.select("tr").get(skipRow+k);
+                                int skipTd = (semester==1)?0:3;
+                                if(k==0)    skipTd++;
 
-                    System.out.println(curriculumDoc.select(".courTable").get(2));
-                    //System.out.println(curriculumDoc.select(".courTable").get(2).select("[rowspan]").get(grade-1).html());
+                                String subjectID = tr.select("td").get(skipTd).text();
+                                if(subjectID.equals(""))
+                                    continue;
+                                String subjectName = new StringTokenizer(tr.select("td").get(skipTd+1).text(), "(").nextToken();
+                                Log.i("subjectName", subjectName);
+                                int credit = Integer.parseInt(tr.select("td").get(skipTd+2).text().charAt(0)+"");
+//                                db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
+//                                        "credit INTEGER);");
+//                                db.execSQL("CREATE TABLE Curriculum (subjectID TEXT, sID INTEGER, " +
+//                                        "yearSemester TEXT, " +
+//                                        "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
+//                                        "PRIMARY KEY(subjectID, sID));");
+                                db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjectID + "', '" + subjectName + "', " + credit + ");");
+                                db.execSQL("INSERT OR REPLACE INTO Curriculum VALUES('"+subjectID+"', "+sid+", '"+present_year_trm+"')");
+                            }
+                        }
+                    }
                 }
             }catch (JSONException|IOException e){
                 e.printStackTrace();;

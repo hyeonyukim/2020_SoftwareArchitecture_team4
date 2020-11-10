@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -74,6 +75,9 @@ public class Page2 extends AppCompatActivity {
             progressDialog.show();
         }
 
+        myDBHelper dbHelper;
+        SQLiteDatabase db;
+
         //백그라운드에서 실행하는 내용
         @Override
         protected String doInBackground(Void... voids) {
@@ -108,8 +112,16 @@ public class Page2 extends AppCompatActivity {
                     tk.nextToken();
                     String name = tk.nextToken().replaceAll(" ", "");
                     int sid = Integer.parseInt(tk.nextToken().replaceAll(" ", ""));
+                    //DB를 생성한다. 이미 이전에 쓰이던 DB가 있으면 삭제하고 다시 만든다.
+                    dbHelper = new myDBHelper(getApplicationContext());
+                    db = dbHelper.getWritableDatabase();
+                    dbHelper.onUpgrade(db, 39, 39);
                     //로그인 세션을 이용해 학생 정보및 수업 정보들을 DB에 저장한다.
                     saveUserInfo(name, sid);
+                    //개설과목 정보를 가져와 저장한다.
+                    saveOpenedClassInfo();
+                    //커리큘럼 정보를 가져와 저장한다.
+                    saveCurriculumInfo(sid);
                     return "Success";
                 }
                 //로그인에 실패한 경우
@@ -142,19 +154,9 @@ public class Page2 extends AppCompatActivity {
             }
         }
 
-//        db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
-//                "credit INTEGER);");
-//        db.execSQL("CREATE TABLE OpenedClass (subjectFullID TEXT PRIMARY KEY, subjectSubID TEXT, " +
-//                "gubun TEXT, grade INTEGER, professor TEXT, time TEXT, classroom TEXT, maxStudent INTEGER, " +
-//                "FOREIGN KEY(subjectSubID) REFERENCES Subject(subjectID));");
-//        db.execSQL("CREATE TABLE LearnedClass (subjectID TEXT, sID INTEGER, " +
-//                "yearSemester TEXT, gubun TEXT, score TEXT, " +
-//                "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
-//                "PRIMARY KEY(subjectID, sID));");
-//        db.execSQL("CREATE TABLE Curriculum (subjectID TEXT, sID INTEGER, " +
-//                "yearSemester TEXT, " +
-//                "FOREIGN KEY(subjectID) REFERENCES Subject(subjectID), " +
-//                "PRIMARY KEY(subjectID, sID));");
+        String College, Major;
+        JSONArray crseCodeArr;
+        ArrayList<Integer> codeList;
 
         //로그인에 성공하면 성공한 세션을 이용해 학생 정보를 가져와 DB에 저장한다.
         protected void saveUserInfo(String name, int sid){
@@ -169,16 +171,7 @@ public class Page2 extends AppCompatActivity {
             String avgGradeURL = "https://yes.knu.ac.kr/cour/scor/certRec/certRecEnq/listCertRecStatses.action?" +
                     "certRecStats.recDiv=1&certRecStats.gubun=2&id=certRecStatsGrid&columnsProperty=certRecStatsColumns&rowsProperty=certRecStatses&" +
                     "emptyMessageProperty=certRecStatsNotFoundMessage&viewColumn=%2Cgrd_avg&checkable=false&showRowNumber=false&paged=false&serverSortingYn=false&lastColumnNoRender=false&_=";
-            String knuSessionURL = "http://my.knu.ac.kr";
-            String yearSemesterURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/chkSearchYrTrm.action?search_gubun=&_=";
-            String MojorSectionURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/listCrseCdes2.action?search_open_bndle_cde=1&search_gubun=1&_=";
-            String openedClassURL = "";
-            String curriculumURL = "";
 
-            //DB를 생성한다. 이미 이전에 쓰이던 DB가 있으면 삭제하고 다시 만든다.
-            myDBHelper dbHelper = new myDBHelper(getApplicationContext());
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            dbHelper.onUpgrade(db, 39, 39);
             try {
                 //로그인 세션은 쿠키에 저장되어 있으므로 이를 저장해둔다.
                 Map<String, String> cookies = response.cookies();
@@ -187,8 +180,8 @@ public class Page2 extends AppCompatActivity {
                 Document basicInfo = Jsoup.connect(studentURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
                 int grade = Integer.parseInt(basicInfo.select(".gde_cde").select("[currentvalue]").attr("currentvalue"));
                 StringTokenizer tok = new StringTokenizer(basicInfo.select(".pstn_crse_cde_nm2").select("[currentvalue]").attr("currentvalue"), " ");
-                String College = tok.nextToken();
-                String Major = tok.nextToken();
+                College = tok.nextToken();
+                Major = tok.nextToken();
 
                 Document avgGradeInfo = Jsoup.connect(avgGradeURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
                 int lastElement=0;
@@ -224,11 +217,22 @@ public class Page2 extends AppCompatActivity {
                             "'" + score + "');");
                     code++;
                 }
+            } catch (IOException e) {
+                Log.i("get_fail", "Getting student info has failed");
+                e.printStackTrace();
+            }
+        }
 
+        protected void saveOpenedClassInfo(){
+            String knuSessionURL = "http://my.knu.ac.kr";
+            String yearSemesterURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/chkSearchYrTrm.action?search_gubun=&_=";
+            String MojorSectionURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/listCrseCdes2.action?search_open_bndle_cde=1&search_gubun=1&_=";
+            String openedClassURL = "";
+            try {
                 //다음 학기에 개설되는 수업들의 목록을 가져와 DB의 OpenedClass table에 추가함.
                 //knu사이트의 기본 쿠키들을 가져온다.
                 response = Jsoup.connect(knuSessionURL).method(Connection.Method.GET).execute();
-                cookies = response.cookies();
+                Map<String, String> cookies = response.cookies();
                 //현재 학기가 무엇인지 알아온다. 다음 학기의 시간표를 짜기 위해서는 여기 결과에 한 학기를 추가하도록 수정해야함.
                 Document yearSemesterDoc = Jsoup.connect(yearSemesterURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
                 String present_year_trm = yearSemesterDoc.body().text().replaceAll("'", "");
@@ -236,10 +240,11 @@ public class Page2 extends AppCompatActivity {
                 //전공과 일치하는 항목은 1개 이상일 수 있다. 예를 들어 컴퓨터학과는 컴퓨터학과는 플랫폼 소프트웨어 전공 등 세부 전공이 있기 때문이다.
                 //따라서 전공의 이름을 포함하는 모든 전공들의 코드를 저장해야 한다.
                 Document MajorSectionDoc = Jsoup.connect(MojorSectionURL).requestBody("JSON").cookies(cookies).ignoreContentType(true).post();
-                JSONArray jsonArray = new JSONArray(MajorSectionDoc.body().text());
-                ArrayList<Integer> codeList = new ArrayList<Integer>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                crseCodeArr = new JSONArray(MajorSectionDoc.body().text());
+                codeList = new ArrayList<Integer>();
+                for (int i = 0; i < crseCodeArr.length(); i++) {
+                    JSONObject jsonObject = crseCodeArr.getJSONObject(i);
                     String crse_nm = jsonObject.getString("open_crse_nm_1");
                     if (crse_nm.contains(Major)) {
                         codeList.add(i);
@@ -247,7 +252,7 @@ public class Page2 extends AppCompatActivity {
                 }
                 for (int i = 0; i < codeList.size(); i++) {
                     int index = codeList.get(i);
-                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    JSONObject jsonObject = crseCodeArr.getJSONObject(index);
                     String crse_cde = jsonObject.getString("open_crse_cde_1");
                     String rn = jsonObject.getString("rn");
                     openedClassURL = "http://my.knu.ac.kr/stpo/stpo/cour/listLectPln/list.action?" +
@@ -268,20 +273,35 @@ public class Page2 extends AppCompatActivity {
                                 "'" + professor.get(j).text() + "', '" + time.get(2 * j).text() + "', '" + classroom.get(j).text() + "', " + maxStudent.get(j).text() + ");");
                     }
                 }
-
+            } catch (JSONException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        protected void saveCurriculumInfo(int sid){
+            String curriculumURL = "";
+            try{
                 //해당 학과의 커리큘럼을 가져와 DB의 Curriculum table에 추가함
                 //커리큘럼 검색에 사용되는 정보는 학번 및 전공의 코드 번호인데, 이는 이전의 jsonArray와 codeList를 이용해 알 수 있음.
+                //학번이 저장된 변수 명 : sid
+                //학과 코드가 저장된 변수 : codeList(arraylist형태)
+                //학년이 저장된 변수 : grade
+                //현재 학기 이름(20202와 같은 형태) 변수 : present_year_trm
                 for (int i = 0; i < codeList.size(); i++) {
                     int index = codeList.get(i);
-                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    JSONObject jsonObject = crseCodeArr.getJSONObject(index);
                     String crse_cde = jsonObject.getString("open_crse_cde_1");
                     curriculumURL = "http://yes.knu.ac.kr/cour/curr/curriculum/listCurr/listCurrs.action?listCurr.search_tgt_yr="+sid/1000000+"&listCurr.search_crse_cde="+crse_cde+"&_=";
+                    Document curriculumDoc = Jsoup.connect(curriculumURL).method(Connection.Method.GET).execute().parse();
+                    //전공 과목 관련 커리큘럼 테이블
+                    Element majorTable = curriculumDoc.select(".courTable").get(2);
+                    //교양 과목 관련 커리큘럼 테이블
+                    Element electiveTable = curriculumDoc.select(".courTable").get(3);
 
+                    System.out.println(curriculumDoc.select(".courTable").get(2));
+                    //System.out.println(curriculumDoc.select(".courTable").get(2).select("[rowspan]").get(grade-1).html());
                 }
-
-            } catch (IOException | JSONException e) {
-                Log.i("get_fail", "Getting student info has failed");
-                e.printStackTrace();
+            }catch (JSONException|IOException e){
+                e.printStackTrace();;
             }
         }
     }

@@ -24,6 +24,42 @@ public class SummaryActivity extends AppCompatActivity {
         Cursor result = db.rawQuery("SELECT Average_Score FROM Student", null);
         Cursor learn_table = db.rawQuery("SELECT l.yearsemester, l.gubun, s.subjectID, s.subjectName, s.credit, l.score FROM LearnedClass l, Subject s WHERE l.subjectID=s.subjectID", null);
         HashMap<Double, Double> score45_table = new HashMap<>();
+
+
+        if (result.moveToFirst()) {
+            double score43 = result.getDouble(0);
+            TextView p5score43 = (TextView) findViewById(R.id.P5score43);
+            p5score43.setText("학점 :  " + score43 + "/4.3");
+
+            int score43_integer = (int) score43;//4.3학점의 정수부분
+            double score43_double = score43 - (double) score43_integer;//4.3학점의 소수부분
+            double score43_double_cal = 0;
+            score43_double = Math.round(score43_double * 100) / 100.0;
+            if (score43_double < 0.3) {//소수부분이 0.3보다 작을 경우
+                score43_double_cal = score43_double + 1;
+            } else if (score43_double >= 0.3) {//소수부분이 0.3보다 큰 경우
+                score43_double_cal = score43_double;
+            }
+            putMap(score45_table);
+            double score45_double = score45_table.get(score43_double_cal);//4.3 학점의 소수부분을 토대로 4.5학점으로 변환
+
+            double score45 = 0.0; //초기값 설정
+
+            if (score43_double < 0.3) {//0.3보다 작을 경우
+                score45 = score45_double + score43_integer - 1;
+            } else if (score43_double >= 0.3) {//0.3보다 큰 경우
+                score45 = score45_double + score43_integer;
+            }
+            TextView p5score45 = (TextView) findViewById(R.id.P5score45);
+            p5score45.setText("학점 :  " + score45 + "/4.5");
+        }
+        String yearandsemester = learn_table.getString(0);
+        //Log.i("year_sem", yearandsemester);
+        /*TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
+        p5_yearsemester.setText(""+ yearandsemester +"");*/
+    }
+
+    protected void putMap(HashMap<Double, Double> score45_table){
         score45_table.put(0.3, 0.5);
         score45_table.put(0.31, 0.51);
         score45_table.put(0.32, 0.52);
@@ -124,37 +160,5 @@ public class SummaryActivity extends AppCompatActivity {
         score45_table.put(1.27, 1.48);
         score45_table.put(1.28, 1.48);
         score45_table.put(1.29, 1.49);
-
-        if (result.moveToFirst()) {
-            double score43 = result.getDouble(0);
-            TextView p5score43 = (TextView) findViewById(R.id.P5score43);
-            p5score43.setText("학점 :  " + score43 + "/4.3");
-
-            int score43_integer = (int) score43;//4.3학점의 정수부분
-            double score43_double = score43 - (double) score43_integer;//4.3학점의 소수부분
-            double score43_double_cal = 0;
-            score43_double = Math.round(score43_double * 100) / 100.0;
-            if (score43_double < 0.3) {//소수부분이 0.3보다 작을 경우
-                score43_double_cal = score43_double + 1;
-            } else if (score43_double >= 0.3) {//소수부분이 0.3보다 큰 경우
-                score43_double_cal = score43_double;
-            }
-
-            double score45_double = score45_table.get(score43_double_cal);//4.3 학점의 소수부분을 토대로 4.5학점으로 변환
-
-            double score45 = 0.0; //초기값 설정
-
-            if (score43_double < 0.3) {//0.3보다 작을 경우
-                score45 = score45_double + score43_integer - 1;
-            } else if (score43_double >= 0.3) {//0.3보다 큰 경우
-                score45 = score45_double + score43_integer;
-            }
-            TextView p5score45 = (TextView) findViewById(R.id.P5score45);
-            p5score45.setText("학점 :  " + score45 + "/4.5");
-        }
-        String yearandsemester = learn_table.getString(0);
-        //Log.i("year_sem", yearandsemester);
-        /*TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
-        p5_yearsemester.setText(""+ yearandsemester +"");*/
     }
 }

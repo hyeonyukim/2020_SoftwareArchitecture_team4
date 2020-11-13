@@ -53,7 +53,9 @@ public class SummaryActivity extends AppCompatActivity {
             TextView p5score45 = (TextView) findViewById(R.id.P5score45);
             p5score45.setText("학점 :  " + score45 + "/4.5");
         }
-        String yearandsemester = learn_table.getString(0);
+        if(learn_table.moveToFirst()) {
+            String yearandsemester = learn_table.getString(0);
+        }
         //Log.i("year_sem", yearandsemester);
         /*TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
         p5_yearsemester.setText(""+ yearandsemester +"");*/

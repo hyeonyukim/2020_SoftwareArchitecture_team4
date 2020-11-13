@@ -67,6 +67,7 @@
             <TextView android:text="김바보" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
             <TextView android:text="20" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
         </TableRow>
+
     </TableLayout>
 
 </LinearLayout>

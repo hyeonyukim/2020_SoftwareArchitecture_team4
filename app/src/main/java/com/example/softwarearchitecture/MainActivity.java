@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        Intent P1LoginIntent = new Intent(MainActivity.this, Page2.class);
+                        Intent P1LoginIntent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(P1LoginIntent);
                     }
                 }

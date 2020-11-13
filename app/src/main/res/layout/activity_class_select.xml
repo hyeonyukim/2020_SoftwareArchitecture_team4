@@ -27,6 +27,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/P7body"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
@@ -34,11 +35,7 @@
         android:layout_margin="10dp"
         android:gravity="center_vertical"
         android:orientation="vertical">
-        <RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#F0F0F0"/>
+
     </LinearLayout>
 
 

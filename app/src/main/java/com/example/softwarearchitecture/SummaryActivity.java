@@ -53,7 +53,10 @@ public class SummaryActivity extends AppCompatActivity {
             TextView p5score45 = (TextView) findViewById(R.id.P5score45);
             p5score45.setText("학점 :  " + score45 + "/4.5");
         }
-        if(learn_table.moveToFirst()) {
+
+        learn_table.moveToFirst();
+
+        do {
             String year = learn_table.getString(0);
             TextView p5_year = (TextView) findViewById(R.id.sub_Year);
             p5_year.setText(""+ year +"");
@@ -78,7 +81,8 @@ public class SummaryActivity extends AppCompatActivity {
             String score = learn_table.getString(5);
             TextView p5_score = (TextView) findViewById(R.id.sub_Score);
             p5_score.setText(""+ score +"");
-        }
+
+        } while(learn_table.moveToNext());
     }
 
     protected void putMap(HashMap<Double, Double> score45_table){

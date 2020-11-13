@@ -32,7 +32,7 @@ public class MenuActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        Intent P4RecommendIntent = new Intent(MenuActivity.this, RecommendActivity.class);
+                        Intent P4RecommendIntent = new Intent(MenuActivity.this, ClassSelectActivity.class);
                         startActivity(P4RecommendIntent);
                     }
                 }

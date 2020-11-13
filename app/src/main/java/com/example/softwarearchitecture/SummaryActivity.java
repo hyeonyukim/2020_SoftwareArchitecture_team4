@@ -54,24 +54,24 @@ public class SummaryActivity extends AppCompatActivity {
             p5score45.setText("학점 :  " + score45 + "/4.5");
         }
         if(learn_table.moveToFirst()) {
-            String yearandsemester = learn_table.getString(0);
-            TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
-            p5_yearsemester.setText(""+ yearandsemester +"");
+            String year = learn_table.getString(0);
+            TextView p5_year = (TextView) findViewById(R.id.sub_Year);
+            p5_year.setText(""+ year +"");
 
-            String sub_distinct = learn_table.getString(1);
+            String distinct = learn_table.getString(1);
             TextView p5_distinct = (TextView) findViewById(R.id.sub_Gubun);
-            p5_distinct.setText(""+ sub_distinct +"");
+            p5_distinct.setText(""+ distinct +"");
 
-            String Code = learn_table.getString(2);
+            String code = learn_table.getString(2);
             TextView p5_code = (TextView) findViewById(R.id.sub_Code);
-            p5_distinct.setText(""+ Code +"");
+            p5_distinct.setText(""+ code +"");
 
-            String subname = learn_table.getString(3);
+            String name = learn_table.getString(3);
             TextView p5_name = (TextView) findViewById(R.id.sub_Name);
-            p5_distinct.setText(""+ subname +"");
+            p5_distinct.setText(""+ name +"");
 
 
-            String credit = learn_table.getString(4);
+            int credit = learn_table.getInt(4);
             TextView p5_credit = (TextView) findViewById(R.id.sub_Credit);
             p5_distinct.setText(""+ credit +"");
 

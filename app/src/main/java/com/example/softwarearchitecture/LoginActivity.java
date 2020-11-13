@@ -208,6 +208,7 @@ public class LoginActivity extends AppCompatActivity {
                     //데이터를 가져와 subject table에 추가함.
                     String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
                     String subjectName = tableRow.select(".subj_cnm").attr("currentvalue");
+                    Log.i("데이터베이스 넣을 때", subjectName);
                     int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
                     db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjectID + "', '" + subjectName + "', " + credit + ");");
                     //데이터를 가져와 learnedClass table에 추가함.

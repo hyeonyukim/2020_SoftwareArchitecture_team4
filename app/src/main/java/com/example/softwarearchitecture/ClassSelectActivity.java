@@ -19,7 +19,7 @@ public class ClassSelectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_class_select);
         myDBHelper dbHelper = new myDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor result = db.rawQuery("SELECT o.subjectFullID, s.subjectName, s.credit, o.time, o.maxStudent\n" +
+        Cursor result = db.rawQuery("SELECT o.subjectFullID, s.subjectName, s.credit, o.time, o.maxStudent, o.professor\n" +
                 "FROM Subject s, OpenedClass o, Curriculum c\n" +
                 "WHERE s.subjectID = o.subjectSubID\n" +
                 "AND s.subjectID NOT IN (SELECT subjectID From LearnedClass)\n" +
@@ -33,8 +33,25 @@ public class ClassSelectActivity extends AppCompatActivity {
             int credit = result.getInt(2);
             String time = result.getString(3);
             int maxStudent = result.getInt(4);
+            String professor = result.getString(5);
+
             LinearLayout linearLayout = new LinearLayout(this);
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            LinearLayout leftside = new LinearLayout(this);
+            leftside.setOrientation(LinearLayout.VERTICAL);
+            leftside.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            linearLayout.addView(leftside);
+
+            LinearLayout rightside = new LinearLayout(this);
+            rightside.setOrientation(LinearLayout.HORIZONTAL);
+            leftside.setLayoutParams(new LinearLayout.LayoutParams
+                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            linearLayout.addView(leftside);
+
+
+
 
 //            Log.i("fullid", subjectFullID);
 //            Log.i("name", subjectName);

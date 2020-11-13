@@ -41,6 +41,7 @@ public class myDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS OpenedClass");
         db.execSQL("DROP TABLE IF EXISTS LearnedClass");
         db.execSQL("DROP TABLE IF EXISTS Curriculum");
+        db.execSQL("DROP TABLE IF EXISTS SelectedClass");
         onCreate(db);
     }
 }

@@ -73,7 +73,6 @@ public class SummaryActivity extends AppCompatActivity {
             TextView p5_name = (TextView) findViewById(R.id.sub_Name);
             p5_name.setText(""+ name +"");
 
-
             int credit = learn_table.getInt(4);
             TextView p5_credit = (TextView) findViewById(R.id.sub_Credit);
             p5_credit.setText(""+ credit +"");

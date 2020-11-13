@@ -33,12 +33,14 @@ public class ClassSelectActivity extends AppCompatActivity {
             int credit = result.getInt(2);
             String time = result.getString(3);
             int maxStudent = result.getInt(4);
+            LinearLayout linearLayout = new LinearLayout(this);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-            Log.i("fullid", subjectFullID);
-            Log.i("name", subjectName);
-            Log.i("credit", credit+"");
-            Log.i("time", time);
-            Log.i("maxStudent", maxStudent+"");
+//            Log.i("fullid", subjectFullID);
+//            Log.i("name", subjectName);
+//            Log.i("credit", credit+"");
+//            Log.i("time", time);
+//            Log.i("maxStudent", maxStudent+"");
 
         }while(result.moveToNext());
     }

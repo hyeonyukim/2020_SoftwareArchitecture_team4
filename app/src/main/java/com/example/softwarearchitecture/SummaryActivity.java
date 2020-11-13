@@ -82,12 +82,6 @@ public class SummaryActivity extends AppCompatActivity {
             TextView p5_score = (TextView) findViewById(R.id.sub_Score);
             p5_score.setText(""+ score +"");
 
-            Log.i("year",year);
-            Log.i("distinct",distinct);
-            Log.i("code",code);
-            Log.i("name",name);
-            Log.i("score",score);
-
         } while(learn_table.moveToNext());
     }
     protected void putMap(HashMap<Double, Double> score45_table){

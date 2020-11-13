@@ -30,7 +30,7 @@
         android:id="@+id/P7body"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="10"
         android:background="@drawable/border"
         android:layout_margin="10dp"
         android:gravity="center_vertical"
@@ -38,5 +38,25 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/P7tail"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+        <Button
+            android:id="@+id/P7button"
+            android:text="시간표 생성하기"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/p7border"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:textColor="@color/WHITE"
+            android:onClick="onClickButton"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

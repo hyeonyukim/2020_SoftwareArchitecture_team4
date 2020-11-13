@@ -64,20 +64,20 @@ public class SummaryActivity extends AppCompatActivity {
 
             String code = learn_table.getString(2);
             TextView p5_code = (TextView) findViewById(R.id.sub_Code);
-            p5_distinct.setText(""+ code +"");
+            p5_code.setText(""+ code +"");
 
             String name = learn_table.getString(3);
             TextView p5_name = (TextView) findViewById(R.id.sub_Name);
-            p5_distinct.setText(""+ name +"");
+            p5_name.setText(""+ name +"");
 
 
             int credit = learn_table.getInt(4);
             TextView p5_credit = (TextView) findViewById(R.id.sub_Credit);
-            p5_distinct.setText(""+ credit +"");
+            p5_credit.setText(""+ credit +"");
 
             String score = learn_table.getString(5);
             TextView p5_score = (TextView) findViewById(R.id.sub_Score);
-            p5_distinct.setText(""+ score +"");
+            p5_score.setText(""+ score +"");
         }
     }
 

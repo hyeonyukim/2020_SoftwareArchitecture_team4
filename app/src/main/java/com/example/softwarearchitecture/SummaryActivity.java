@@ -84,7 +84,6 @@ public class SummaryActivity extends AppCompatActivity {
 
         } while(learn_table.moveToNext());
     }
-
     protected void putMap(HashMap<Double, Double> score45_table){
         score45_table.put(0.3, 0.5);
         score45_table.put(0.31, 0.51);

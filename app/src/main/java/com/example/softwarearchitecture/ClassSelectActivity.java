@@ -48,7 +48,7 @@ public class ClassSelectActivity extends AppCompatActivity {
             rightside.setOrientation(LinearLayout.HORIZONTAL);
             leftside.setLayoutParams(new LinearLayout.LayoutParams
                     (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
-            linearLayout.addView(leftside);
+//            linearLayout.addView(leftside);
 
 
 

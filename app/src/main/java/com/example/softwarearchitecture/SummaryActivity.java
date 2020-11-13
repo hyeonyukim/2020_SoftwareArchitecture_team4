@@ -22,7 +22,7 @@ public class SummaryActivity extends AppCompatActivity {
         myDBHelper dbHelper = new myDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor result = db.rawQuery("SELECT Average_Score FROM Student", null);
-        Cursor learn_table = db.rawQuery("SELECT l.yearsemester, l.gubun, s.subjectID, s.subjectName, s.credit, l.score FROM LearnedClass l, Subject s WHERE l.subjectID=s.subjectID", null);
+        Cursor learn_table = db.rawQuery("SELECT l.yearsemester, l.gubun, l.subjectID, s.subjectName, s.credit, l.score FROM LearnedClass l, Subject s WHERE l.subjectID=s.subjectID", null);
         HashMap<Double, Double> score45_table = new HashMap<>();
 
 
@@ -55,10 +55,30 @@ public class SummaryActivity extends AppCompatActivity {
         }
         if(learn_table.moveToFirst()) {
             String yearandsemester = learn_table.getString(0);
+            TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
+            p5_yearsemester.setText(""+ yearandsemester +"");
+
+            String sub_distinct = learn_table.getString(1);
+            TextView p5_distinct = (TextView) findViewById(R.id.sub_Gubun);
+            p5_distinct.setText(""+ sub_distinct +"");
+
+            String Code = learn_table.getString(2);
+            TextView p5_code = (TextView) findViewById(R.id.sub_Code);
+            p5_distinct.setText(""+ Code +"");
+
+            String subname = learn_table.getString(3);
+            TextView p5_name = (TextView) findViewById(R.id.sub_Name);
+            p5_distinct.setText(""+ subname +"");
+
+
+            String credit = learn_table.getString(4);
+            TextView p5_credit = (TextView) findViewById(R.id.sub_Credit);
+            p5_distinct.setText(""+ credit +"");
+
+            String score = learn_table.getString(5);
+            TextView p5_score = (TextView) findViewById(R.id.sub_Score);
+            p5_distinct.setText(""+ score +"");
         }
-        //Log.i("year_sem", yearandsemester);
-        /*TextView p5_yearsemester = (TextView) findViewById(R.id.sub_Year);
-        p5_yearsemester.setText(""+ yearandsemester +"");*/
     }
 
     protected void putMap(HashMap<Double, Double> score45_table){

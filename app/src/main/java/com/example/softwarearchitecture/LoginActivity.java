@@ -87,6 +87,8 @@ public class LoginActivity extends AppCompatActivity {
                 EditText pwdbtn = (EditText) findViewById(R.id.P2Password);
                 String id = idbtn.getText().toString();
                 String pwd = pwdbtn.getText().toString();
+                Log.i("id", id);
+                Log.i("pwd", pwd);
 
                 //Get the login form with the cookies
                 Connection.Response loginForm = Jsoup.connect(loginAction)

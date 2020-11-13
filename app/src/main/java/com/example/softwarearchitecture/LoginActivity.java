@@ -209,12 +209,12 @@ public class LoginActivity extends AppCompatActivity {
                         break;
                     //데이터를 가져와 subject table에 추가함.
                     String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
-                    String subjectName = tableRow.select(".subj_cnm").attr("currentvalue");
+                    String subjectName = tableRow.select(".subj_nm").attr("currentvalue");
                     int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
                     db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjectID + "', '" + subjectName + "', " + credit + ");");
                     //데이터를 가져와 learnedClass table에 추가함.
                     String yearSemester = tableRow.select(".yr_trm").attr("currentvalue");
-                    String gubun = tableRow.select(".subj_div_cde").attr("currentvalue");
+                    String gubun = tableRow.select(".subj_div_cde").text();
                     String score = tableRow.select(".rec_rank_cde").attr("currentvalue");
                     db.execSQL("INSERT INTO LearnedClass VALUES('" + subjectID + "', " + sid + ", '" + yearSemester + "', '" + gubun + "', " +
                             "'" + score + "');");

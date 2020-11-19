@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="학점요약"
+                    android:text="시간표추천"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="24sp"
                     android:textStyle="bold" />

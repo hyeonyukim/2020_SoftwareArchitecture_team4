@@ -88,6 +88,7 @@ public class SummaryActivity extends AppCompatActivity {
             for(int i=0; i<text.length; i++) {
                 row.addView(text[i]);
             }
+            //row.setBackground(getDrawable(R.drawable.border));
             table.addView(row);
         } while(learn_table.moveToNext());
     }

@@ -7,12 +7,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class ClassSelectActivity extends AppCompatActivity {
+import com.example.softwarearchitecture.databinding.ActivityClassSelectBinding;
+import com.example.softwarearchitecture.databinding.ItemBinding;
 
+public class ClassSelectActivity extends AppCompatActivity {
+    ItemBinding binding;
+    ActivityClassSelectBinding parentbinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,8 +31,6 @@ public class ClassSelectActivity extends AppCompatActivity {
                 "WHERE s.subjectID = o.subjectSubID\n" +
                 "AND s.subjectID NOT IN (SELECT subjectID From LearnedClass)\n" +
                 "AND s.subjectID = c.subjectID;", null);
-
-        LinearLayout body = (LinearLayout)findViewById(R.id.P7body);
         result.moveToFirst();
         do {
             String subjectFullID = result.getString(0);
@@ -35,24 +40,38 @@ public class ClassSelectActivity extends AppCompatActivity {
             int maxStudent = result.getInt(4);
             String professor = result.getString(5);
 
-            LinearLayout linearLayout = new LinearLayout(this);
-            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout body = (LinearLayout) findViewById(R.id.P7body);
+            LinearLayout item=(LinearLayout)LayoutInflater.from(ClassSelectActivity.this)
+                    .inflate(R.layout.item, null);
+            TextView title = (TextView)item.findViewById(R.id.ItemtextView1);
+            title.setText(subjectName);
+            body.addView(item);
 
-            LinearLayout leftside = new LinearLayout(this);
-            leftside.setOrientation(LinearLayout.VERTICAL);
-            leftside.setLayoutParams(new LinearLayout.LayoutParams
-                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
-            linearLayout.addView(leftside);
 
-            LinearLayout rightside = new LinearLayout(this);
-            rightside.setOrientation(LinearLayout.HORIZONTAL);
-            leftside.setLayoutParams(new LinearLayout.LayoutParams
-                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//            parentbinding = ActivityClassSelectBinding.inflate(getLayoutInflater());
+//            binding = ItemBinding.inflate(getLayoutInflater());
+//            View parent = parentbinding.getRoot();
+//            LinearLayout item = binding.getRoot();
+
+//
+//            body.addView(item);
+//            setContentView(parent);
+//            setContentView(R.layout.activity_class_select);
+
+//            LinearLayout linearLayout = new LinearLayout(this);
+//            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+//
+//            LinearLayout leftside = new LinearLayout(this);
+//            leftside.setOrientation(LinearLayout.VERTICAL);
+//            leftside.setLayoutParams(new LinearLayout.LayoutParams
+//                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
 //            linearLayout.addView(leftside);
-
-
-
-
+//
+//            LinearLayout rightside = new LinearLayout(this);
+//            rightside.setOrientation(LinearLayout.HORIZONTAL);
+//            leftside.setLayoutParams(new LinearLayout.LayoutParams
+//                    (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
+//            linearLayout.addView(leftside);
 //            Log.i("fullid", subjectFullID);
 //            Log.i("name", subjectName);
 //            Log.i("credit", credit+"");

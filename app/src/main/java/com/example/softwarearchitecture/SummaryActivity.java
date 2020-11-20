@@ -65,6 +65,7 @@ public class SummaryActivity extends AppCompatActivity {
             for(int i=0; i<text.length; i++) {
                 text[i] = new TextView(getApplicationContext());
                 text[i].setGravity(Gravity.CENTER);
+                text[i].setBackground(getDrawable(R.drawable.tableborder));
             }
             //내용 채우기
             String year = learn_table.getString(0);
@@ -88,7 +89,7 @@ public class SummaryActivity extends AppCompatActivity {
             for(int i=0; i<text.length; i++) {
                 row.addView(text[i]);
             }
-            //row.setBackground(getDrawable(R.drawable.border));
+            row.setBackground(getDrawable(R.drawable.tableborder));
             table.addView(row);
         } while(learn_table.moveToNext());
     }

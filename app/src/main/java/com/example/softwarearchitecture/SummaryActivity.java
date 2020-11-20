@@ -7,6 +7,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -55,32 +58,37 @@ public class SummaryActivity extends AppCompatActivity {
         }
 
         learn_table.moveToFirst();
-
+        TableLayout table = (TableLayout)findViewById(R.id.P5Table);
         do {
+            TableRow row = new TableRow(getApplicationContext());
+            TextView[] text = new TextView[6];
+            for(int i=0; i<text.length; i++) {
+                text[i] = new TextView(getApplicationContext());
+                text[i].setGravity(Gravity.CENTER);
+            }
+            //내용 채우기
             String year = learn_table.getString(0);
-            TextView p5_year = (TextView) findViewById(R.id.sub_Year);
-            p5_year.setText(""+ year +"");
+            text[0].setText(""+ year +"");
 
             String distinct = learn_table.getString(1);
-            TextView p5_distinct = (TextView) findViewById(R.id.sub_Gubun);
-            p5_distinct.setText(""+ distinct +"");
+            text[1].setText(""+ distinct +"");
 
             String code = learn_table.getString(2);
-            TextView p5_code = (TextView) findViewById(R.id.sub_Code);
-            p5_code.setText(""+ code +"");
+            text[2].setText(""+ code +"");
 
             String name = learn_table.getString(3);
-            TextView p5_name = (TextView) findViewById(R.id.sub_Name);
-            p5_name.setText(""+ name +"");
+            text[3].setText(""+ name +"");
 
             int credit = learn_table.getInt(4);
-            TextView p5_credit = (TextView) findViewById(R.id.sub_Credit);
-            p5_credit.setText(""+ credit +"");
+            text[4].setText(""+ credit +"");
 
             String score = learn_table.getString(5);
-            TextView p5_score = (TextView) findViewById(R.id.sub_Score);
-            p5_score.setText(""+ score +"");
+            text[5].setText(""+ score +"");
 
+            for(int i=0; i<text.length; i++) {
+                row.addView(text[i]);
+            }
+            table.addView(row);
         } while(learn_table.moveToNext());
     }
     protected void putMap(HashMap<Double, Double> score45_table){

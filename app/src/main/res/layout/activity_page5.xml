@@ -65,6 +65,7 @@
         android:orientation="vertical">
 
         <TableLayout
+            android:id="@+id/P5Table"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
@@ -83,7 +84,7 @@
                 <TextView android:text="학점" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
                 <TextView android:text="점수" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
             </TableRow>
-            <TableRow
+           <!-- <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tableborder">
@@ -94,7 +95,7 @@
                 <TextView android:id="@+id/sub_Name" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
                 <TextView android:id="@+id/sub_Credit" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
                 <TextView android:id="@+id/sub_Score" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            </TableRow>
+            </TableRow>-->
         </TableLayout>
     </LinearLayout>
 

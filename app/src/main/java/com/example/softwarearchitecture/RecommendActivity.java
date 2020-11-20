@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,7 +21,21 @@ public class RecommendActivity extends AppCompatActivity {
         generate();
         idx=1;
         TextView index = (TextView)findViewById(R.id.P6index);
-        //index.setText(idx+"/"+timetable.length);
+        index.setText(idx+"/"+timetable.length);
+        setTimetable(idx);
+
+    }
+
+    public void setTimetable(int index){
+        TableLayout tableLayoout =(TableLayout)findViewById(R.id.P6table);
+
+        for(int i=0; i<timetable[index].size(); i++) {
+            TableRow row = new TableRow(getApplicationContext());
+            TextView text = new TextView(getApplicationContext());
+
+            row.addView(text);
+            tableLayoout.addView(row);
+        }
 
     }
 
@@ -33,9 +49,9 @@ public class RecommendActivity extends AppCompatActivity {
             idx++;
         }
         if(view.getId()==R.id.P6previousButton&&idx>1){
-
             idx--;
         }
         index.setText(idx+"/"+timetable.length);
+        setTimetable(idx);
     }
 }

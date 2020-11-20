@@ -21,7 +21,7 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/ItemtextView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
@@ -31,7 +31,7 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/ItemtextView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
@@ -39,5 +39,28 @@
                 android:textSize="13sp"
                 android:textColor="@android:color/darker_gray"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="right">
+            <Button
+                android:id="@+id/ItemYesButton"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="o"
+                android:background="@color/WHITE"
+                android:layout_gravity="right"/>
+            <Button
+                android:id="@+id/ItemNoButton"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="x"
+                android:background="@color/WHITE"
+                android:layout_gravity="right"/>
+        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

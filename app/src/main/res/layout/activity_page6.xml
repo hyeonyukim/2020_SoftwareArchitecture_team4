@@ -37,6 +37,7 @@
         ></TextView>
 
     <TableLayout
+        android:id="@+id/P6table"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9"
@@ -55,19 +56,6 @@
             <TextView android:text="담당교수" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
             <TextView android:text="수강 정원" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
         </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/tableborder">
-
-            <TextView android:text="CLTR000000" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            <TextView android:text="나는바보다" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            <TextView android:text="13:00~14:15" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            <TextView android:text="3" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            <TextView android:text="김바보" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            <TextView android:text="20" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-        </TableRow>
-
     </TableLayout>
 
     <TableLayout

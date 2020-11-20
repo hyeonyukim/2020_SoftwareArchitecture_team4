@@ -29,11 +29,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_height="wrap_content"
         android:background="@drawable/border"
-        android:layout_margin="10dp"
-        android:gravity="center_vertical"
+        android:gravity="bottom"
+        android:layout_margin = "10dp"
         android:orientation="vertical">
 
         <TextView
@@ -55,15 +54,12 @@
             android:textSize="50dp" />
     </LinearLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
-        android:gravity="center_vertical"
-        android:background="@drawable/border"
-        android:layout_margin="10dp"
-        android:orientation="vertical">
-
+        android:layout_weight="10"
+        android:layout_margin = "10dp"
+        android:layout_gravity="top">
         <TableLayout
             android:id="@+id/P5Table"
             android:layout_width="match_parent"
@@ -84,19 +80,6 @@
                 <TextView android:text="학점" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
                 <TextView android:text="점수" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
             </TableRow>
-           <!-- <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tableborder">
-
-                <TextView android:id="@+id/sub_Year" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-                <TextView android:id="@+id/sub_Gubun" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-                <TextView android:id="@+id/sub_Code" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-                <TextView android:id="@+id/sub_Name" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-                <TextView android:id="@+id/sub_Credit" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-                <TextView android:id="@+id/sub_Score" android:text="" android:layout_width="wrap_content" android:background="@drawable/tableborder" android:textAlignment="center"></TextView>
-            </TableRow>-->
         </TableLayout>
-    </LinearLayout>
-
+    </ScrollView>>
 </LinearLayout>

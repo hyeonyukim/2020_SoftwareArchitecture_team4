@@ -25,9 +25,9 @@ public class RecommendActivity extends AppCompatActivity {
         generate();
         idx=1;
         TextView index = (TextView)findViewById(R.id.P6index);
-        index.setText(idx+"/"+timetable.length);
-        setTimetable(idx);
-
+        //index.setText(idx+"/"+timetable.length);
+        index.setText(idx+"/1000");
+        //setTimetable(idx);
     }
 
     public void setTimetable(int index){

@@ -30,13 +30,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:background="@drawable/border"
         android:layout_margin="10dp">
         <LinearLayout
             android:id="@+id/P7body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:background="@drawable/border"
             android:orientation="vertical">
 
         </LinearLayout>

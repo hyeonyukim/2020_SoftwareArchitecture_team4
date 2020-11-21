@@ -2,11 +2,14 @@ package com.example.softwarearchitecture;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,67 +22,191 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class RecommendActivity extends AppCompatActivity {
-
-    ArrayList<Timetable>[] timetable;
+    ArrayList<Timetable> subjects;
+    ArrayList<Integer> timetable;
     final int maxRecommend = 100;
-    int timetableCnt;
-    TextView[] text;
     int idx;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page6);
-        timetableCnt = generate();
-        idx=0;
-        TextView index = (TextView)findViewById(R.id.P6index);
-        index.setText((idx+1)+"/"+timetableCnt);
-//        index.setText((idx+"/1000");
-        setTimetable(idx);
+        generateTimetable background = new generateTimetable();
+        background.execute();
     }
-//    db.execSQL("CREATE TABLE Subject (subjectID TEXT PRIMARY KEY, subjectName TEXT, " +
-//         "credit INTEGER);");
-//    db.execSQL("CREATE TABLE OpenedClass (subjectFullID TEXT PRIMARY KEY, subjectSubID TEXT, " +
-//            "gubun TEXT, professor TEXT, time TEXT, classroom TEXT, maxStudent INTEGER, " +
-//            "FOREIGN KEY(subjectSubID) REFERENCES Subject(subjectID));");
-//    db.execSQL("CREATE TABLE SelectedClass(subjectFullID TEXT PRIMARY KEY, " +
-//                "FOREIGN KEY(subjectFullID) REFERENCES OpenedClass(subjectFullID));");
-    protected int generate(){
-        timetable = new ArrayList[maxRecommend];
-        timetable[0] = new ArrayList<Timetable>();
+
+    private  class generateTimetable extends AsyncTask<Void, Void, String> {
+        ProgressDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(RecommendActivity.this);
+            progressDialog.setMessage("추천 시간표 생성중...");
+            progressDialog.setCancelable(false);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Horizontal);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            generate();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressDialog.dismiss();
+            idx=0;
+            TextView index = (TextView)findViewById(R.id.P6index);
+            index.setText((idx+1)+"/"+timetable.size());
+            if(timetable.size()>idx)
+                setTimetable(idx);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myDBHelper dbHelper = new myDBHelper(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM SelectedClass");
+    }
+
+    int maxSubjectCnt;
+    protected void generate(){
         myDBHelper dbHelper = new myDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT o.subjectFullID, s.subjectName, o.time, s.credit, o.professor, o.maxStudent " +
                 "FROM SelectedClass c, OpenedClass o, Subject s " +
                 "WHERE c.subjectFullID = o.subjectFullID " +
                 "AND o.subjectSubID = s.subjectID;", null);
+
+        //데이터베이스에서 가져온 과목들을 집어넣는다.
+        subjects = new ArrayList<Timetable>();
         cursor.moveToFirst();
         for(int i=0; i<cursor.getCount(); i++){
             String fullID = cursor.getString(0);
             String name = cursor.getString(1);
-            String time = compressTime(cursor.getString(2));
+            String time = cursor.getString(2);
             int credit = cursor.getInt(3);
             String professor = cursor.getString(4);
             int maxStudent = cursor.getInt(5);
-            timetable[0].add(new Timetable(fullID, name, time, credit, professor, maxStudent));
+            subjects.add(new Timetable(fullID, name, time, credit, professor, maxStudent));
             cursor.moveToNext();
         }
-        return 1;
+
+        timetable = new ArrayList<Integer>();
+        int maxSubjectCnt=maxSubjectCount((int)Math.pow(2, subjects.size())-1, subjects.size());
+        Log.i("maxSubjectCnt", maxSubjectCnt+"");
+        maxSubjectCnt = (maxSubjectCnt>6)?6:maxSubjectCnt;
+        for(int i=0; i<Math.pow(2, subjects.size()); i++){
+            if(subjectCount(i, subjects.size())>=maxSubjectCnt) {
+                if (isPossible(i, subjects.size())) {
+                    timetable.add(i);
+                }
+            }
+        }
     }
+
+    public int maxSubjectCount(int x, int length){
+        int cnt=subjectCount(x, length);
+        if(cnt == length) {
+            if (isPossible(x, length))
+                return cnt;
+        }
+        int temp = x;
+        for(int i=0; i<length; i++){
+            if(temp%2==1) {
+                if(isPossible(x-(int)Math.pow(2, i), length)) {
+                    return cnt - 1;
+                }
+            }
+            temp/=2;
+        }
+        cnt=0;
+        temp = x;
+        for(int i=0; i<length; i++){
+            if(temp%2==1) {
+                int partial = maxSubjectCount(x-(int)Math.pow(2, i), length);
+                if(cnt<partial)
+                    cnt = partial;
+            }
+            temp/=2;
+        }
+        return cnt;
+    }
+
+    public int subjectCount(int x, int length){
+        int cnt =0;
+        for(int i=0; i<length; i++){
+            if(x%2==1)
+                cnt++;
+            x/=2;
+        }
+        return cnt;
+    }
+
+    public boolean isPossible(int x, int length){
+        ArrayList<Integer> subject = new ArrayList<>();
+        for(int i=0; i<length; i++){
+            if(x%2==1)
+                subject.add(i);
+            x/=2;
+        }
+        for(int i=0; i<subject.size(); i++){
+            Timetable a = subjects.get(subject.get(i));
+            StringTokenizer a_tok = new StringTokenizer(a.getTime(), " ");
+            for(int j=i+1; j<subject.size(); j++){
+                Timetable b = subjects.get(subject.get(j));
+                if(b.getName().equals(a.getName()))
+                    return false;
+                while (a_tok.hasMoreTokens()){
+                    String a_start = a_tok.nextToken();
+                    a_tok.nextToken();
+                    String a_end = a_tok.nextToken();
+                    StringTokenizer b_tok = new StringTokenizer(b.getTime(), " ");
+                    while(b_tok.hasMoreTokens()){
+                        String b_start = b_tok.nextToken();
+                        b_tok.nextToken();
+                        String b_end = b_tok.nextToken();
+                        if(a_start.charAt(0)==b_start.charAt(0)){
+                            if(a_end.equals(b_end))
+                                return false;
+                            if(a_start.equals(b_start))
+                                return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 
     public void setTimetable(int index){
         TableLayout tableLayout =(TableLayout)findViewById(R.id.P6table);
         //tableLayout.setStretchAllColumns(false);
+        TextView[] text;
 
-        if(text!=null){
-            for(int i=0; i<text.length; i++) {
-                tableLayout.removeView(text[i]);
+        if(tableLayout.getChildCount()!=1){
+            int rowCnt = tableLayout.getChildCount();
+            for(int i=1; i<rowCnt; i++) {
+                tableLayout.removeViewAt(1);
             }
         }
 
-        for(int j=0; j<timetable[index].size(); j++) {
+        int length = subjects.size();
+        ArrayList<Integer> subject = new ArrayList<>();
+        int x = timetable.get(index);
+        for(int i=0; i<length; i++){
+            if(x%2==1)
+                subject.add(i);
+            x/=2;
+        }
+
+        for(int j=0; j<subject.size(); j++) {
             TableRow row = new TableRow(getApplicationContext());
             text = new TextView[6];
-            Timetable subject = timetable[index].get(j);
+            Timetable rowContent = subjects.get(subject.get(j));
 
             for(int i=0; i<text.length; i++) {
                 text[i] = new TextView(getApplicationContext());
@@ -88,12 +215,12 @@ public class RecommendActivity extends AppCompatActivity {
 //                text[i].setLayoutParams(new LinearLayout.LayoutParams(
 //                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             }
-            String fullID = subject.getCode();
-            String name = subject.getName();
-            String time = subject.getTime();
-            int credit = subject.getCredit();
-            String professor = subject.getProfessor();
-            int maxStudent = subject.getMaxStudent();
+            String fullID = rowContent.getCode();
+            String name = rowContent.getName();
+            String time = rowContent.getTime();
+            int credit = rowContent.getCredit();
+            String professor = rowContent.getProfessor();
+            int maxStudent = rowContent.getMaxStudent();
             text[0].setText(""+ fullID +"");
             text[1].setText(""+ name +"");
             //text[2].setText(""+ time +"");
@@ -111,14 +238,15 @@ public class RecommendActivity extends AppCompatActivity {
 
     public void onClickButton(View view) {
         TextView index = (TextView)findViewById(R.id.P6index);
-        if(view.getId()==R.id.P6nextButton&&idx<timetableCnt-1){
+        if(view.getId()==R.id.P6nextButton&&idx<timetable.size()-1){
             idx++;
         }
         if(view.getId()==R.id.P6previousButton&&idx>0){
             idx--;
         }
-        index.setText(idx+"/"+timetable.length);
-        setTimetable(idx);
+        index.setText((idx+1)+"/"+timetable.size());
+        if(timetable.size()>idx)
+            setTimetable(idx);
     }
 
     public String compressTime(String time){

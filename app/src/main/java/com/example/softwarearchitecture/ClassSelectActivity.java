@@ -61,6 +61,10 @@ public class ClassSelectActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     body.removeView(item);
                     subjectIDs.remove(subjectFullID);
+//                    System.out.println("DELTED");
+//                    for(int i=0; i<subjectIDs.size(); i++){
+//                        Log.i(i+"", subjectIDs.get(i));
+//                    }
                 }
             });
             title.setText(subjectName+"("+subjectFullID+")");

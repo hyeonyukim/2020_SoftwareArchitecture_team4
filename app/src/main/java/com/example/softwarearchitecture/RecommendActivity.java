@@ -19,6 +19,9 @@ import android.widget.TextView;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class RecommendActivity extends AppCompatActivity {
@@ -71,7 +74,7 @@ public class RecommendActivity extends AppCompatActivity {
         db.execSQL("DELETE FROM SelectedClass");
     }
 
-    int maxSubjectCnt;
+    HashMap<Long, Boolean> possibileMap;
     protected void generate(){
         myDBHelper dbHelper = new myDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -95,45 +98,70 @@ public class RecommendActivity extends AppCompatActivity {
         }
 
         timetable = new ArrayList<Long>();
-        int maxSubjectCnt=maxSubjectCount((long)Math.pow(2, subjects.size())-1, subjects.size());
+        int maxSubjectCnt = fillMap();
         Log.i("maxSubjectCnt", maxSubjectCnt+"");
         maxSubjectCnt = (maxSubjectCnt>6)?6:maxSubjectCnt;
-        for(long i=0; i<Math.pow(2, subjects.size()); i++){
-            if(subjectCount(i, subjects.size())>=maxSubjectCnt) {
-                if (isPossible(i, subjects.size())) {
-                    timetable.add(i);
-                }
+//        for(long i=0; i<Math.pow(2, subjects.size()); i++){
+//            if(subjectCount(i, subjects.size())>=maxSubjectCnt) {
+//                if (possibileMap.get(i)) {
+//                    timetable.add(i);
+//                }
+//            }
+//        }
+        Iterator<Long> keySet = possibileMap.keySet().iterator();
+        while(keySet.hasNext()){
+            long key = keySet.next();
+            if(possibileMap.get(key)&&subjectCount(key, subjects.size())>=maxSubjectCnt){
+                timetable.add(key);
             }
         }
     }
 
-    public int maxSubjectCount(long x, int length){
-        int cnt=subjectCount(x, length);
-        if(cnt == length) {
-            if (isPossible(x, length))
-                return cnt;
-        }
-        long temp = x;
-        for(int i=0; i<length; i++){
-            if(temp%2==1) {
-                if(isPossible(x-(long)Math.pow(2, i), length)) {
-                    return cnt - 1;
+    public int fillMap(){
+        int max=0;
+        possibileMap = new HashMap<Long, Boolean>();
+        for(long i=0; i<Math.pow(2, subjects.size()); i++){
+            int subjectCnt = subjectCount(i, subjects.size());
+            if(subjectCnt<=10) {
+                if (isPossible(i, subjects.size())) {
+                    possibileMap.put(i, true);
+                    if(subjectCnt>max)
+                        max = subjectCnt;
+                }else{
+                    possibileMap.put(i, false);
                 }
             }
-            temp/=2;
         }
-        cnt=0;
-        temp = x;
-        for(long i=0; i<length; i++){
-            if(temp%2==1) {
-                int partial = maxSubjectCount(x-(int)Math.pow(2, i), length);
-                if(cnt<partial)
-                    cnt = partial;
-            }
-            temp/=2;
-        }
-        return cnt;
+        return max;
     }
+
+//    public int maxSubjectCount(long x, int length){
+//        int cnt=subjectCount(x, length);
+//        if(cnt == length) {
+//            if (isPossible(x, length))
+//                return cnt;
+//        }
+//        long temp = x;
+//        for(int i=0; i<length; i++){
+//            if(temp%2==1) {
+//                if(isPossible(x-(long)Math.pow(2, i), length)) {
+//                    return cnt - 1;
+//                }
+//            }
+//            temp/=2;
+//        }
+//        cnt=0;
+//        temp = x;
+//        for(long i=0; i<length; i++){
+//            if(temp%2==1) {
+//                int partial = maxSubjectCount(x-(int)Math.pow(2, i), length);
+//                if(cnt<partial)
+//                    cnt = partial;
+//            }
+//            temp/=2;
+//        }
+//        return cnt;
+//    }
 
     public int subjectCount(long x, int length){
         int cnt =0;

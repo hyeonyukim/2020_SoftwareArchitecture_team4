@@ -23,7 +23,7 @@ import java.util.StringTokenizer;
 
 public class RecommendActivity extends AppCompatActivity {
     ArrayList<Timetable> subjects;
-    ArrayList<Integer> timetable;
+    ArrayList<Long> timetable;
     final int maxRecommend = 100;
     int idx;
     @Override
@@ -94,11 +94,11 @@ public class RecommendActivity extends AppCompatActivity {
             cursor.moveToNext();
         }
 
-        timetable = new ArrayList<Integer>();
-        int maxSubjectCnt=maxSubjectCount((int)Math.pow(2, subjects.size())-1, subjects.size());
+        timetable = new ArrayList<Long>();
+        int maxSubjectCnt=maxSubjectCount((long)Math.pow(2, subjects.size())-1, subjects.size());
         Log.i("maxSubjectCnt", maxSubjectCnt+"");
         maxSubjectCnt = (maxSubjectCnt>6)?6:maxSubjectCnt;
-        for(int i=0; i<Math.pow(2, subjects.size()); i++){
+        for(long i=0; i<Math.pow(2, subjects.size()); i++){
             if(subjectCount(i, subjects.size())>=maxSubjectCnt) {
                 if (isPossible(i, subjects.size())) {
                     timetable.add(i);
@@ -107,16 +107,16 @@ public class RecommendActivity extends AppCompatActivity {
         }
     }
 
-    public int maxSubjectCount(int x, int length){
+    public int maxSubjectCount(long x, int length){
         int cnt=subjectCount(x, length);
         if(cnt == length) {
             if (isPossible(x, length))
                 return cnt;
         }
-        int temp = x;
+        long temp = x;
         for(int i=0; i<length; i++){
             if(temp%2==1) {
-                if(isPossible(x-(int)Math.pow(2, i), length)) {
+                if(isPossible(x-(long)Math.pow(2, i), length)) {
                     return cnt - 1;
                 }
             }
@@ -124,7 +124,7 @@ public class RecommendActivity extends AppCompatActivity {
         }
         cnt=0;
         temp = x;
-        for(int i=0; i<length; i++){
+        for(long i=0; i<length; i++){
             if(temp%2==1) {
                 int partial = maxSubjectCount(x-(int)Math.pow(2, i), length);
                 if(cnt<partial)
@@ -135,7 +135,7 @@ public class RecommendActivity extends AppCompatActivity {
         return cnt;
     }
 
-    public int subjectCount(int x, int length){
+    public int subjectCount(long x, int length){
         int cnt =0;
         for(int i=0; i<length; i++){
             if(x%2==1)
@@ -145,7 +145,7 @@ public class RecommendActivity extends AppCompatActivity {
         return cnt;
     }
 
-    public boolean isPossible(int x, int length){
+    public boolean isPossible(long x, int length){
         ArrayList<Integer> subject = new ArrayList<>();
         for(int i=0; i<length; i++){
             if(x%2==1)
@@ -196,7 +196,7 @@ public class RecommendActivity extends AppCompatActivity {
 
         int length = subjects.size();
         ArrayList<Integer> subject = new ArrayList<>();
-        int x = timetable.get(index);
+        long x = timetable.get(index);
         for(int i=0; i<length; i++){
             if(x%2==1)
                 subject.add(i);

@@ -253,7 +253,10 @@ public class LoginActivity extends AppCompatActivity {
                 for (int i = 0; i < crseCodeArr.length(); i++) {
                     JSONObject jsonObject = crseCodeArr.getJSONObject(i);
                     String crse_nm = jsonObject.getString("open_crse_nm_1");
-                    if (crse_nm.contains(Major)) {
+                    if(Major.contains("컴퓨터학부")&&!Major.contains("글로벌소프트웨어융합전공")
+                            &&crse_nm.contains("글로벌소프트웨어융합전공"))
+                        continue;
+                    else if (crse_nm.contains(Major)) {
                         codeList.add(i);
                     }
                 }

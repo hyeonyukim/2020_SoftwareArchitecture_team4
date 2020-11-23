@@ -53,6 +53,7 @@ public class SummaryActivity extends AppCompatActivity {
             } else if (score43_double >= 0.3) {//0.3보다 큰 경우
                 score45 = score45_double + score43_integer;
             }
+            score45 = Math.round(score45 * 1000) / 1000.0;
             TextView p5score45 = (TextView) findViewById(R.id.P5score45);
             p5score45.setText("학점 :  " + score45 + "/4.5");
         }

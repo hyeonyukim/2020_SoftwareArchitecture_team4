@@ -9,9 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.softwarearchitecture.databinding.ActivityClassSelectBinding;
@@ -21,7 +24,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class ClassSelectActivity extends AppCompatActivity {
+public class ClassSelectActivity extends AppCompatActivity{
     ItemBinding binding;
     ActivityClassSelectBinding parentbinding;
     ArrayList<String> subjectIDs;
@@ -39,6 +42,27 @@ public class ClassSelectActivity extends AppCompatActivity {
                 "AND s.subjectID = c.subjectID;", null);
         result.moveToFirst();
         subjectIDs = new ArrayList<String>();
+
+        //스피너 항목 추가.
+        Spinner spinner = (Spinner)findViewById(R.id.P7spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.credits, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                credits = i + 5;
+                //Log.i("Spinner", credits + "과목");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                credits = 5;
+            }
+        });
 
         do {
             final String subjectFullID = result.getString(0);
@@ -74,14 +98,19 @@ public class ClassSelectActivity extends AppCompatActivity {
         }while(result.moveToNext());
     }
 
+    int credits;
 
     public void onClickButton(View view) {
         for(int i=0; i<subjectIDs.size(); i++){
             db.execSQL("INSERT INTO SelectedClass VALUES('"+subjectIDs.get(i)+"')");
         }
         Intent P7RecommendIntent = new Intent(ClassSelectActivity.this, RecommendActivity.class);
+        P7RecommendIntent.putExtra("credits", credits);
+        Log.i("Spinner", credits + "과목");
         startActivity(P7RecommendIntent);
     }
+
+
 
     public String compressTime(String time){
         String res="";

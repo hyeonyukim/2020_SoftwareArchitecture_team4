@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -50,8 +51,9 @@ public class RecommendActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            generate();
-            return null;
+            if(generate())
+                return "Success";
+            return "Fail";
         }
 
         @Override
@@ -63,6 +65,10 @@ public class RecommendActivity extends AppCompatActivity {
             index.setText((idx+1)+"/"+timetable.size());
             if(timetable.size()>idx)
                 setTimetable(idx);
+            if(s.equals("Fail")) {
+                int selectedSubjectCnt = getIntent().getExtras().getInt("credits");
+                Toast.makeText(RecommendActivity.this,  selectedSubjectCnt + "과목을 들을 수 있는 방법이 없습니다.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -75,7 +81,7 @@ public class RecommendActivity extends AppCompatActivity {
     }
 
     HashMap<Long, Boolean> possibileMap;
-    protected void generate(){
+    protected boolean generate(){
         myDBHelper dbHelper = new myDBHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT o.subjectFullID, s.subjectName, o.time, s.credit, o.professor, o.maxStudent " +
@@ -98,23 +104,24 @@ public class RecommendActivity extends AppCompatActivity {
         }
 
         timetable = new ArrayList<Long>();
+        int selectedSubjectCnt = getIntent().getExtras().getInt("credits");
         int maxSubjectCnt = fillMap();
         Log.i("maxSubjectCnt", maxSubjectCnt+"");
-        maxSubjectCnt = (maxSubjectCnt>6)?6:maxSubjectCnt;
-//        for(long i=0; i<Math.pow(2, subjects.size()); i++){
-//            if(subjectCount(i, subjects.size())>=maxSubjectCnt) {
-//                if (possibileMap.get(i)) {
-//                    timetable.add(i);
-//                }
-//            }
-//        }
+        boolean ret=true;
+        if(maxSubjectCnt<selectedSubjectCnt){
+            ret = false;
+        }else{
+            maxSubjectCnt = selectedSubjectCnt;
+        }
+
         Iterator<Long> keySet = possibileMap.keySet().iterator();
         while(keySet.hasNext()){
             long key = keySet.next();
-            if(possibileMap.get(key)&&subjectCount(key, subjects.size())>=maxSubjectCnt){
+            if(possibileMap.get(key)&&subjectCount(key, subjects.size())==maxSubjectCnt){
                 timetable.add(key);
             }
         }
+        return ret;
     }
 
     public int fillMap(){

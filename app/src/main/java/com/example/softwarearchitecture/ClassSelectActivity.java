@@ -40,7 +40,6 @@ public class ClassSelectActivity extends AppCompatActivity{
                 "WHERE s.subjectID = o.subjectSubID\n" +
                 "AND s.subjectID NOT IN (SELECT subjectID From LearnedClass)\n" +
                 "AND s.subjectID = c.subjectID;", null);
-        result.moveToFirst();
         subjectIDs = new ArrayList<String>();
 
         //스피너 항목 추가.
@@ -64,38 +63,40 @@ public class ClassSelectActivity extends AppCompatActivity{
             }
         });
 
-        do {
-            final String subjectFullID = result.getString(0);
-            String subjectName = result.getString(1);
-            int credit = result.getInt(2);
-            String time = compressTime(result.getString(3));
-            int maxStudent = result.getInt(4);
-            String professor = result.getString(5);
-            subjectIDs.add(subjectFullID);
+        if(result.moveToFirst()) {
+            do {
+                final String subjectFullID = result.getString(0);
+                String subjectName = result.getString(1);
+                int credit = result.getInt(2);
+                String time = compressTime(result.getString(3));
+                int maxStudent = result.getInt(4);
+                String professor = result.getString(5);
+                subjectIDs.add(subjectFullID);
 
-            final LinearLayout body = (LinearLayout) findViewById(R.id.P7body);
-            final LinearLayout item=(LinearLayout)LayoutInflater.from(ClassSelectActivity.this)
-                    .inflate(R.layout.item, null);
-            TextView title = (TextView)item.findViewById(R.id.ItemtextView1);
-            TextView subscript = (TextView)item.findViewById(R.id.ItemtextView2);
-            TextView subscript2 = (TextView)item.findViewById(R.id.ItemtextView3);
-            Button deleteButton = (Button)item.findViewById(R.id.ItemNoButton);
-            deleteButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    body.removeView(item);
-                    subjectIDs.remove(subjectFullID);
+                final LinearLayout body = (LinearLayout) findViewById(R.id.P7body);
+                final LinearLayout item = (LinearLayout) LayoutInflater.from(ClassSelectActivity.this)
+                        .inflate(R.layout.item, null);
+                TextView title = (TextView) item.findViewById(R.id.ItemtextView1);
+                TextView subscript = (TextView) item.findViewById(R.id.ItemtextView2);
+                TextView subscript2 = (TextView) item.findViewById(R.id.ItemtextView3);
+                Button deleteButton = (Button) item.findViewById(R.id.ItemNoButton);
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        body.removeView(item);
+                        subjectIDs.remove(subjectFullID);
 //                    System.out.println("DELTED");
 //                    for(int i=0; i<subjectIDs.size(); i++){
 //                        Log.i(i+"", subjectIDs.get(i));
 //                    }
-                }
-            });
-            title.setText(subjectName+"("+subjectFullID+")");
-            subscript.setText("교수:" + professor + ", 정원:" + maxStudent + "명, " + credit + "학점");
-            subscript2.setText("강의 시간: " + time);
-            body.addView(item);
-        }while(result.moveToNext());
+                    }
+                });
+                title.setText(subjectName + "(" + subjectFullID + ")");
+                subscript.setText("교수:" + professor + ", 정원:" + maxStudent + "명, " + credit + "학점");
+                subscript2.setText("강의 시간: " + time);
+                body.addView(item);
+            } while (result.moveToNext());
+        }
     }
 
     int credits;

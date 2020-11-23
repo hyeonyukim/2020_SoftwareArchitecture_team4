@@ -181,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 //학생의 기본 정보를 볼 수 있는 url및 성적을 확인할 수 있는 url에 연결하고, DB의 Student table에 추가함.
                 Document basicInfo = Jsoup.connect(studentURL).method(Connection.Method.GET).cookies(cookies).execute().parse();
+                //System.out.println(basicInfo.html());
                 grade = Integer.parseInt(basicInfo.select(".gde_cde").select("[currentvalue]").attr("currentvalue"));
                 StringTokenizer tok = new StringTokenizer(basicInfo.select(".pstn_crse_cde_nm2").select("[currentvalue]").attr("currentvalue"), " ");
                 College = tok.nextToken();
@@ -205,12 +206,17 @@ public class LoginActivity extends AppCompatActivity {
                 while (true) {
                     String id = "#certRecEnqGrid_" + code;
                     Elements tableRow = learned.select(id);
+                    //System.out.println(tableRow.html());
                     if (tableRow.size() <= 0)
                         break;
                     //데이터를 가져와 subject table에 추가함.
                     String subjectID = tableRow.select(".subj_cde").attr("currentvalue");
                     String subjectName = tableRow.select(".subj_nm").attr("currentvalue");
-                    int credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
+                    int credit;
+                    if(tableRow.select(".unit").attr("currentvalue").equals(""))
+                        credit=0;
+                    else
+                        credit = Integer.parseInt(tableRow.select(".unit").attr("currentvalue"));
                     db.execSQL("INSERT OR REPLACE INTO Subject VALUES('" + subjectID + "', '" + subjectName + "', " + credit + ");");
                     //데이터를 가져와 learnedClass table에 추가함.
                     String yearSemester = tableRow.select(".yr_trm").attr("currentvalue");
